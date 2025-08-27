@@ -1,0 +1,1460 @@
+[
+    {
+        "model": "Users.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$6gCtNS5OFayovq4VDSlnFs$1hdTzWpQDD9J+iCdGAT4JwwG5GpQ3KIqXoUOgBgR2s4=",
+            "last_login": "2025-08-24T19:04:33.092Z",
+            "is_superuser": true,
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:04.853Z",
+            "role": "admin",
+            "email": "admin@a.aa",
+            "last_name": "Админов",
+            "first_name": "Админ",
+            "patronymic": "",
+            "date_of_birth": null,
+            "phone_number": "",
+            "avatar": null,
+            "is_admin_key_required": false,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["admin"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Users.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$pybQHxHEfGYuFLegHa73It$T12nVqIkqj5uc5HaRue2bABk87pdtRvXwLGiAE8CHO4=",
+            "last_login": null,
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:05.438Z",
+            "role": "teacher",
+            "email": "teacher_1@a.aa",
+            "last_name": "Иванов",
+            "first_name": "Иван",
+            "patronymic": "Иванович",
+            "date_of_birth": null,
+            "phone_number": "+79000000000",
+            "avatar": null,
+            "is_admin_key_required": false,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["teacher"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Users.user",
+        "pk": 3,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$bnXcGoA2g48Hksz52fMDHu$CZ1Vfho+P7jDX7REqniAw2vYhWJ/73iMxuFAuP7QySw=",
+            "last_login": null,
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:06.035Z",
+            "role": "student",
+            "email": "student_1@a.aa",
+            "last_name": "Степанов",
+            "first_name": "Степан",
+            "patronymic": "Степанович",
+            "date_of_birth": null,
+            "phone_number": "+79000000001",
+            "avatar": null,
+            "is_admin_key_required": false,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["student"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Users.user",
+        "pk": 4,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$HIg970nLcqQs8nvw3voKZt$ChUxGGDQoJWyCwJALrbKPaLtlaYSBKCz5krpvGZRAvA=",
+            "last_login": null,
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:06Z",
+            "role": "moderator",
+            "email": "moderator_1@a.aa",
+            "last_name": "Алексина",
+            "first_name": "Алена",
+            "patronymic": "Алексеевна",
+            "date_of_birth": null,
+            "phone_number": "+79000000002",
+            "avatar": null,
+            "is_admin_key_required": true,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["moderator"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Users.user",
+        "pk": 5,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$NQOoN7a3d3ywbwQMljdE8q$nydabRdcme5gCG7pDs8osaazMmc8CaVqp7ffZPqhmK0=",
+            "last_login": null,
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:07Z",
+            "role": "admin",
+            "email": "admin_2@a.aa",
+            "last_name": "Еленова",
+            "first_name": "Елена",
+            "patronymic": "Елисеевна",
+            "date_of_birth": null,
+            "phone_number": "",
+            "avatar": null,
+            "is_admin_key_required": true,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["admin"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Users.user",
+        "pk": 6,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$pybQHxHEfGYuFLegHa73It$T12nVqIkqj5uc5HaRue2bABk87pdtRvXwLGiAE8CHO4=",
+            "last_login": null,
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:05.438Z",
+            "role": "teacher",
+            "email": "teacher_2@a.aa",
+            "last_name": "Петров",
+            "first_name": "Петр",
+            "patronymic": "Петрович",
+            "date_of_birth": null,
+            "phone_number": "+79000000003",
+            "avatar": null,
+            "is_admin_key_required": false,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["teacher"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Users.user",
+        "pk": 7,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$bnXcGoA2g48Hksz52fMDHu$CZ1Vfho+P7jDX7REqniAw2vYhWJ/73iMxuFAuP7QySw=",
+            "last_login": null,
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:06.035Z",
+            "role": "student",
+            "email": "student_2@a.aa",
+            "last_name": "Козлов",
+            "first_name": "Алексей",
+            "patronymic": "Дмитриевич",
+            "date_of_birth": null,
+            "phone_number": "+79000000004",
+            "avatar": null,
+            "is_admin_key_required": false,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["student"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Users.user",
+        "pk": 8,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$bnXcGoA2g48Hksz52fMDHu$CZ1Vfho+P7jDX7REqniAw2vYhWJ/73iMxuFAuP7QySw=",
+            "last_login": null,
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:06.035Z",
+            "role": "student",
+            "email": "student_3@a.aa",
+            "last_name": "Сидоров",
+            "first_name": "Олег",
+            "patronymic": "Игоревич",
+            "date_of_birth": null,
+            "phone_number": "+79000000005",
+            "avatar": null,
+            "is_admin_key_required": false,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["student"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Users.user",
+        "pk": 9,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$bnXcGoA2g48Hksz52fMDHu$CZ1Vfho+P7jDX7REqniAw2vYhWJ/73iMxuFAuP7QySw=",
+            "last_login": null,
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-08-24T19:04:06.035Z",
+            "role": "student",
+            "email": "student_4@a.aa",
+            "last_name": "Морозов",
+            "first_name": "Андрей",
+            "patronymic": "Сергеевич",
+            "date_of_birth": null,
+            "phone_number": "+79000000006",
+            "avatar": null,
+            "is_admin_key_required": false,
+            "has_logged_in_with_key": false,
+            "groups": [
+                ["student"]
+            ],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "Teachers.teacher",
+        "pk": 2,
+        "fields": {
+            "disciplines": []
+        }
+    },
+    {
+        "model": "Teachers.teacher",
+        "pk": 6,
+        "fields": {
+            "disciplines": []
+        }
+    },
+    {
+        "model": "Students.student",
+        "pk": 3,
+        "fields": {
+            "course": 1
+        }
+    },
+    {
+        "model": "Students.student",
+        "pk": 7,
+        "fields": {
+            "course": 1
+        }
+    },
+    {
+        "model": "Students.student",
+        "pk": 8,
+        "fields": {
+            "course": 1
+        }
+    },
+    {
+        "model": "Students.student",
+        "pk": 9,
+        "fields": {
+            "course": 1
+        }
+    },
+    {
+        "model": "Admin.adminkey",
+        "pk": 1,
+        "fields": {
+            "user": 5,
+            "key": "nzWddl4Y2uJIfB48pDJKqxJ-2HivIBv5QIdbdmO31G0",
+            "created_at": "2025-08-24T19:05:19.257Z",
+            "expires_at": null,
+            "is_active": true,
+            "email": "admin_2@a.aa"
+        }
+    },
+    {
+        "model": "Admin.adminkey",
+        "pk": 2,
+        "fields": {
+            "user": 4,
+            "key": "xFLmWDlYRNPecyUcLzodvV8n6lg1y4nwqbp8TEylCVs",
+            "created_at": "2025-08-24T19:06:43.132Z",
+            "expires_at": null,
+            "is_active": true,
+            "email": "moderator_1@a.aa"
+        }
+    },
+    {
+        "model": "Disciplines.discipline",
+        "pk": 1,
+        "fields": {
+            "title": "Математика",
+            "preview": null,
+            "description": "Базовый курс по математике.",
+            "owner": 2,
+            "created_at": "2025-08-24T21:00:00Z",
+            "updated_at": "2025-08-24T21:00:00Z",
+            "order": 1
+        }
+    },
+    {
+        "model": "Disciplines.discipline",
+        "pk": 2,
+        "fields": {
+            "title": "Физика",
+            "preview": null,
+            "description": "Курс по основам физики (БЕСПЛАТНО).",
+            "owner": 2,
+            "created_at": "2025-08-24T21:05:00Z",
+            "updated_at": "2025-08-24T21:05:00Z",
+            "order": 2
+        }
+    },
+    {
+        "model": "Disciplines.discipline",
+        "pk": 3,
+        "fields": {
+            "title": "Русский язык",
+            "preview": null,
+            "description": "Курс по русскому языку.",
+            "owner": 6,
+            "created_at": "2025-08-24T21:10:00Z",
+            "updated_at": "2025-08-24T21:10:00Z",
+            "order": 3
+        }
+    },
+    {
+        "model": "Disciplines.discipline",
+        "pk": 4,
+        "fields": {
+            "title": "Литература",
+            "preview": null,
+            "description": "Курс по русской литературе (БЕСПЛАТНО).",
+            "owner": 6,
+            "created_at": "2025-08-24T21:15:00Z",
+            "updated_at": "2025-08-24T21:15:00Z",
+            "order": 4
+        }
+    },
+    {
+        "model": "Lessons.lesson",
+        "pk": 1,
+        "fields": {
+            "title": "Сложение и вычитание",
+            "description": "Учимся складывать и вычитать числа.",
+            "preview": null,
+            "video_url": "https://rutube.ru/video/math_lesson_1/",
+            "video_file": null,
+            "discipline": 1,
+            "section": null,
+            "owner": 2,
+            "created_at": "2025-08-24T21:20:00Z",
+            "updated_at": "2025-08-24T21:20:00Z",
+            "lesson_order": 1
+        }
+    },
+    {
+        "model": "Lessons.lesson",
+        "pk": 2,
+        "fields": {
+            "title": "Умножение и деление",
+            "description": "Учимся умножать и делить числа.",
+            "preview": null,
+            "video_url": "https://rutube.ru/video/math_lesson_2/",
+            "video_file": null,
+            "discipline": 1,
+            "section": null,
+            "owner": 2,
+            "created_at": "2025-08-24T21:25:00Z",
+            "updated_at": "2025-08-24T21:25:00Z",
+            "lesson_order": 2
+        }
+    },
+    {
+        "model": "Lessons.lesson",
+        "pk": 3,
+        "fields": {
+            "title": "Электромагнетизм",
+            "description": "Изучаем основы электромагнетизма.",
+            "preview": null,
+            "video_url": "https://rutube.ru/video/physics_lesson_1/",
+            "video_file": null,
+            "discipline": 2,
+            "section": null,
+            "owner": 2,
+            "created_at": "2025-08-24T21:30:00Z",
+            "updated_at": "2025-08-24T21:30:00Z",
+            "lesson_order": 1
+        }
+    },
+    {
+        "model": "Lessons.lesson",
+        "pk": 4,
+        "fields": {
+            "title": "Квантовая механика",
+            "description": "Введение в квантовую механику.",
+            "preview": null,
+            "video_url": "https://rutube.ru/video/physics_lesson_2/",
+            "video_file": null,
+            "discipline": 2,
+            "section": null,
+            "owner": 2,
+            "created_at": "2025-08-24T21:35:00Z",
+            "updated_at": "2025-08-24T21:35:00Z",
+            "lesson_order": 2
+        }
+    },
+    {
+        "model": "Lessons.lesson",
+        "pk": 5,
+        "fields": {
+            "title": "Части речи",
+            "description": "Существительное, прилагательное, глагол.",
+            "preview": null,
+            "video_url": "https://rutube.ru/video/russian_lesson_1/",
+            "video_file": null,
+            "discipline": 3,
+            "section": null,
+            "owner": 6,
+            "created_at": "2025-08-24T21:40:00Z",
+            "updated_at": "2025-08-24T21:40:00Z",
+            "lesson_order": 1
+        }
+    },
+    {
+        "model": "Lessons.lesson",
+        "pk": 6,
+        "fields": {
+            "title": "Части предложения",
+            "description": "Подлежащее, сказуемое, второстепенные члены.",
+            "preview": null,
+            "video_url": "https://rutube.ru/video/russian_lesson_2/",
+            "video_file": null,
+            "discipline": 3,
+            "section": null,
+            "owner": 6,
+            "created_at": "2025-08-24T21:45:00Z",
+            "updated_at": "2025-08-24T21:45:00Z",
+            "lesson_order": 2
+        }
+    },
+    {
+        "model": "Lessons.lesson",
+        "pk": 7,
+        "fields": {
+            "title": "Пушкин А.С.",
+            "description": "Обзор творчества А.С. Пушкина.",
+            "preview": null,
+            "video_url": "https://rutube.ru/video/literature_lesson_1/",
+            "video_file": null,
+            "discipline": 4,
+            "section": null,
+            "owner": 6,
+            "created_at": "2025-08-24T21:50:00Z",
+            "updated_at": "2025-08-24T21:50:00Z",
+            "lesson_order": 1
+        }
+    },
+    {
+        "model": "Lessons.lesson",
+        "pk": 8,
+        "fields": {
+            "title": "Толстой Л.Н.",
+            "description": "Обзор творчества Л.Н. Толстого.",
+            "preview": null,
+            "video_url": "https://rutube.ru/video/literature_lesson_2/",
+            "video_file": null,
+            "discipline": 4,
+            "section": null,
+            "owner": 6,
+            "created_at": "2025-08-24T21:55:00Z",
+            "updated_at": "2025-08-24T21:55:00Z",
+            "lesson_order": 2
+        }
+    },
+    {
+        "model": "Tests.test",
+        "pk": 1,
+        "fields": {
+            "title": "Тест: Сложение и вычитание",
+            "description": "Проверь свои навыки сложения и вычитания.",
+            "discipline": 1,
+            "lesson": 1,
+            "section": null,
+            "owner": 2,
+            "created_at": "2025-08-24T22:00:00Z",
+            "updated_at": "2025-08-24T22:00:00Z"
+        }
+    },
+    {
+        "model": "Tests.test",
+        "pk": 2,
+        "fields": {
+            "title": "Тест: Умножение и деление",
+            "description": "Проверь свои навыки умножения и деления.",
+            "discipline": 1,
+            "lesson": 2,
+            "section": null,
+            "owner": 2,
+            "created_at": "2025-08-24T22:05:00Z",
+            "updated_at": "2025-08-24T22:05:00Z"
+        }
+    },
+    {
+        "model": "Tests.test",
+        "pk": 3,
+        "fields": {
+            "title": "Тест: Электромагнетизм",
+            "description": "Проверь свои знания по электромагнетизму.",
+            "discipline": 2,
+            "lesson": 3,
+            "section": null,
+            "owner": 2,
+            "created_at": "2025-08-24T22:10:00Z",
+            "updated_at": "2025-08-24T22:10:00Z"
+        }
+    },
+    {
+        "model": "Tests.test",
+        "pk": 4,
+        "fields": {
+            "title": "Тест: Квантовая механика",
+            "description": "Проверь свои знания по квантовой механике.",
+            "discipline": 2,
+            "lesson": 4,
+            "section": null,
+            "owner": 2,
+            "created_at": "2025-08-24T22:15:00Z",
+            "updated_at": "2025-08-24T22:15:00Z"
+        }
+    },
+    {
+        "model": "Tests.test",
+        "pk": 5,
+        "fields": {
+            "title": "Тест: Части речи",
+            "description": "Проверь свои знания о частях речи.",
+            "discipline": 3,
+            "lesson": 5,
+            "section": null,
+            "owner": 6,
+            "created_at": "2025-08-24T22:20:00Z",
+            "updated_at": "2025-08-24T22:20:00Z"
+        }
+    },
+    {
+        "model": "Tests.test",
+        "pk": 6,
+        "fields": {
+            "title": "Тест: Части предложения",
+            "description": "Проверь свои знания о частях предложения.",
+            "discipline": 3,
+            "lesson": 6,
+            "section": null,
+            "owner": 6,
+            "created_at": "2025-08-24T22:25:00Z",
+            "updated_at": "2025-08-24T22:25:00Z"
+        }
+    },
+    {
+        "model": "Tests.test",
+        "pk": 7,
+        "fields": {
+            "title": "Тест: Пушкин А.С.",
+            "description": "Проверь свои знания о Пушкине.",
+            "discipline": 4,
+            "lesson": 7,
+            "section": null,
+            "owner": 6,
+            "created_at": "2025-08-24T22:30:00Z",
+            "updated_at": "2025-08-24T22:30:00Z"
+        }
+    },
+    {
+        "model": "Tests.test",
+        "pk": 8,
+        "fields": {
+            "title": "Тест: Толстой Л.Н.",
+            "description": "Проверь свои знания о Толстом.",
+            "discipline": 4,
+            "lesson": 8,
+            "section": null,
+            "owner": 6,
+            "created_at": "2025-08-24T22:35:00Z",
+            "updated_at": "2025-08-24T22:35:00Z"
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 1,
+        "fields": {
+            "test": 1,
+            "text": "Сколько будет 2 + 2?",
+            "question_order": 1
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 1,
+        "fields": {
+            "question": 1,
+            "text": "4",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 2,
+        "fields": {
+            "question": 1,
+            "text": "5",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 2,
+        "fields": {
+            "test": 1,
+            "text": "Сколько будет 5 - 3?",
+            "question_order": 2
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 3,
+        "fields": {
+            "question": 2,
+            "text": "2",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 4,
+        "fields": {
+            "question": 2,
+            "text": "3",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 3,
+        "fields": {
+            "test": 2,
+            "text": "Сколько будет 3 * 4?",
+            "question_order": 1
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 5,
+        "fields": {
+            "question": 3,
+            "text": "12",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 6,
+        "fields": {
+            "question": 3,
+            "text": "10",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 4,
+        "fields": {
+            "test": 2,
+            "text": "Сколько будет 10 / 2?",
+            "question_order": 2
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 7,
+        "fields": {
+            "question": 4,
+            "text": "5",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 8,
+        "fields": {
+            "question": 4,
+            "text": "4",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 9,
+        "fields": {
+            "test": 3,
+            "text": "Что такое электромагнитное поле?",
+            "question_order": 1
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 9,
+        "fields": {
+            "question": 9,
+            "text": "Поле, создаваемое электрическими зарядами",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 10,
+        "fields": {
+            "question": 9,
+            "text": "Магнитное поле Земли",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 10,
+        "fields": {
+            "test": 3,
+            "text": "Кто открыл закон электромагнитной индукции?",
+            "question_order": 2
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 11,
+        "fields": {
+            "question": 10,
+            "text": "Фарадей",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 12,
+        "fields": {
+            "question": 10,
+            "text": "Ньютон",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 11,
+        "fields": {
+            "test": 4,
+            "text": "Что такое квант?",
+            "question_order": 1
+        }
+    },
+      {
+        "model": "Tests.answer",
+        "pk": 13,
+        "fields": {
+            "question": 11,
+            "text": "Минимальная неделимая порция энергии",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 14,
+        "fields": {
+            "question": 11,
+            "text": "Большой объем энергии",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 12,
+        "fields": {
+            "test": 4,
+            "text": "Кто является одним из основателей квантовой механики?",
+            "question_order": 2
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 15,
+        "fields": {
+            "question": 12,
+            "text": "Макс Планк",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 16,
+        "fields": {
+            "question": 12,
+            "text": "Исаак Ньютон",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 13,
+        "fields": {
+            "test": 5,
+            "text": "Какая часть речи обозначает предмет?",
+            "question_order": 1
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 17,
+        "fields": {
+            "question": 13,
+            "text": "Существительное",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 18,
+        "fields": {
+            "question": 13,
+            "text": "Глагол",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 14,
+        "fields": {
+            "test": 5,
+            "text": "Какая часть речи обозначает признак предмета?",
+            "question_order": 2
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 19,
+        "fields": {
+            "question": 14,
+            "text": "Прилагательное",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 20,
+        "fields": {
+            "question": 14,
+            "text": "Наречие",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 15,
+        "fields": {
+            "test": 6,
+            "text": "Главный член предложения, обозначающий предмет речи?",
+            "question_order": 1
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 21,
+        "fields": {
+            "question": 15,
+            "text": "Подлежащее",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 22,
+        "fields": {
+            "question": 15,
+            "text": "Сказуемое",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 16,
+        "fields": {
+            "test": 6,
+            "text": "Главный член предложения, обозначающий действие предмета речи?",
+            "question_order": 2
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 23,
+        "fields": {
+            "question": 16,
+            "text": "Сказуемое",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 24,
+        "fields": {
+            "question": 16,
+            "text": "Подлежащее",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 17,
+        "fields": {
+            "test": 7,
+            "text": "В каком городе родился А.С. Пушкин?",
+            "question_order": 1
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 25,
+        "fields": {
+            "question": 17,
+            "text": "Москва",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 26,
+        "fields": {
+            "question": 17,
+            "text": "Санкт-Петербург",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 18,
+        "fields": {
+            "test": 7,
+            "text": "Назовите одно из известных произведений Пушкина.",
+            "question_order": 2
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 27,
+        "fields": {
+            "question": 18,
+            "text": "Евгений Онегин",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 28,
+        "fields": {
+            "question": 18,
+            "text": "Война и мир",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 19,
+        "fields": {
+            "test": 8,
+            "text": "Какое известное произведение написал Л.Н. Толстой?",
+            "question_order": 1
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 29,
+        "fields": {
+            "question": 19,
+            "text": "Война и мир",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 30,
+        "fields": {
+            "question": 19,
+            "text": "Отцы и дети",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Tests.question",
+        "pk": 20,
+        "fields": {
+            "test": 8,
+            "text": "Где родился Л.Н. Толстой?",
+            "question_order": 2
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 31,
+        "fields": {
+            "question": 20,
+            "text": "Ясная Поляна",
+            "is_correct": true
+        }
+    },
+    {
+        "model": "Tests.answer",
+        "pk": 32,
+        "fields": {
+            "question": 20,
+            "text": "Тула",
+            "is_correct": false
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 1,
+        "fields": {
+            "discipline": 1,
+            "lesson": null,
+            "price": "999.00",
+            "is_free": false,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:40:00Z",
+            "updated_at": "2025-08-24T22:40:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 2,
+        "fields": {
+            "discipline": 2,
+            "lesson": null,
+            "price": "0.00",
+            "is_free": true,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:41:00Z",
+            "updated_at": "2025-08-24T22:41:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 3,
+        "fields": {
+            "discipline": 3,
+            "lesson": null,
+            "price": "999.00",
+            "is_free": false,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:42:00Z",
+            "updated_at": "2025-08-24T22:42:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 4,
+        "fields": {
+            "discipline": 4,
+            "lesson": null,
+            "price": "0.00",
+            "is_free": true,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:43:00Z",
+            "updated_at": "2025-08-24T22:43:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 5,
+        "fields": {
+            "discipline": null,
+            "lesson": 1,
+            "price": "149.00",
+            "is_free": false,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:44:00Z",
+            "updated_at": "2025-08-24T22:44:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 6,
+        "fields": {
+            "discipline": null,
+            "lesson": 2,
+            "price": "149.00",
+            "is_free": false,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:45:00Z",
+            "updated_at": "2025-08-24T22:45:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 7,
+        "fields": {
+            "discipline": null,
+            "lesson": 3,
+            "price": "0.00",
+            "is_free": true,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:46:00Z",
+            "updated_at": "2025-08-24T22:46:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 8,
+        "fields": {
+            "discipline": null,
+            "lesson": 4,
+            "price": "0.00",
+            "is_free": true,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:47:00Z",
+            "updated_at": "2025-08-24T22:47:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 9,
+        "fields": {
+            "discipline": null,
+            "lesson": 5,
+            "price": "149.00",
+            "is_free": false,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:48:00Z",
+            "updated_at": "2025-08-24T22:48:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 10,
+        "fields": {
+            "discipline": null,
+            "lesson": 6,
+            "price": "149.00",
+            "is_free": false,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:49:00Z",
+            "updated_at": "2025-08-24T22:49:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 11,
+        "fields": {
+            "discipline": null,
+            "lesson": 7,
+            "price": "0.00",
+            "is_free": true,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:50:00Z",
+            "updated_at": "2025-08-24T22:50:00Z"
+        }
+    },
+    {
+        "model": "Payments.priceconfiguration",
+        "pk": 12,
+        "fields": {
+            "discipline": null,
+            "lesson": 8,
+            "price": "0.00",
+            "is_free": true,
+            "discount_price": null,
+            "discount_end_date": null,
+            "created_at": "2025-08-24T22:51:00Z",
+            "updated_at": "2025-08-24T22:51:00Z"
+        }
+    },
+    {
+        "model": "Payments.payment",
+        "pk": 1,
+        "fields": {
+            "user": 3,
+            "payment_type": "discipline",
+            "discipline": 1,
+            "lesson": null,
+            "amount": "999.00",
+            "status": "completed",
+            "payment_method": "card",
+            "transaction_id": "math_discipline_student1",
+            "yookassa_payment_id": null,
+            "yookassa_confirmation_url": null,
+            "created_at": "2025-08-24T22:55:00Z",
+            "completed_at": "2025-08-24T22:55:00Z"
+        }
+    },
+    {
+        "model": "Payments.payment",
+        "pk": 2,
+        "fields": {
+            "user": 3,
+            "payment_type": "discipline",
+            "discipline": 2,
+            "lesson": null,
+            "amount": "0.00",
+            "status": "completed",
+            "payment_method": "free",
+            "transaction_id": "physics_discipline_student1",
+            "yookassa_payment_id": null,
+            "yookassa_confirmation_url": null,
+            "created_at": "2025-08-24T22:56:00Z",
+            "completed_at": "2025-08-24T22:56:00Z"
+        }
+    },
+    {
+        "model": "Payments.payment",
+        "pk": 3,
+        "fields": {
+            "user": 7,
+            "payment_type": "discipline",
+            "discipline": 1,
+            "lesson": null,
+            "amount": "999.00",
+            "status": "completed",
+            "payment_method": "card",
+            "transaction_id": "math_discipline_student2",
+            "yookassa_payment_id": null,
+            "yookassa_confirmation_url": null,
+            "created_at": "2025-08-24T22:57:00Z",
+            "completed_at": "2025-08-24T22:57:00Z"
+        }
+    },
+    {
+        "model": "Payments.payment",
+        "pk": 4,
+        "fields": {
+            "user": 7,
+            "payment_type": "lesson",
+            "discipline": null,
+            "lesson": 5,
+            "amount": "149.00",
+            "status": "completed",
+            "payment_method": "card",
+            "transaction_id": "russian_lesson5_student2",
+            "yookassa_payment_id": null,
+            "yookassa_confirmation_url": null,
+            "created_at": "2025-08-24T22:58:00Z",
+            "completed_at": "2025-08-24T22:58:00Z"
+        }
+    },
+    {
+        "model": "Payments.payment",
+        "pk": 5,
+        "fields": {
+            "user": 9,
+            "payment_type": "lesson",
+            "discipline": null,
+            "lesson": 2,
+            "amount": "149.00",
+            "status": "completed",
+            "payment_method": "card",
+            "transaction_id": "math_lesson2_student4",
+            "yookassa_payment_id": null,
+            "yookassa_confirmation_url": null,
+            "created_at": "2025-08-24T22:59:00Z",
+            "completed_at": "2025-08-24T22:59:00Z"
+        }
+    },
+    {
+        "model": "Payments.payment",
+        "pk": 6,
+        "fields": {
+            "user": 9,
+            "payment_type": "lesson",
+            "discipline": null,
+            "lesson": 6,
+            "amount": "149.00",
+            "status": "completed",
+            "payment_method": "card",
+            "transaction_id": "russian_lesson6_student4",
+            "yookassa_payment_id": null,
+            "yookassa_confirmation_url": null,
+            "created_at": "2025-08-24T23:00:00Z",
+            "completed_at": "2025-08-24T23:00:00Z"
+        }
+    },
+    {
+        "model": "Payments.purchasedcontent",
+        "pk": 1,
+        "fields": {
+            "user": 3,
+            "discipline": 1,
+            "lesson": null,
+            "payment": 1,
+            "purchased_at": "2025-08-24T22:55:00Z"
+        }
+    },
+    {
+        "model": "Payments.purchasedcontent",
+        "pk": 2,
+        "fields": {
+            "user": 3,
+            "discipline": 2,
+            "lesson": null,
+            "payment": 2,
+            "purchased_at": "2025-08-24T22:56:00Z"
+        }
+    },
+    {
+        "model": "Payments.purchasedcontent",
+        "pk": 3,
+        "fields": {
+            "user": 7,
+            "discipline": 1,
+            "lesson": null,
+            "payment": 3,
+            "purchased_at": "2025-08-24T22:57:00Z"
+        }
+    },
+    {
+        "model": "Payments.purchasedcontent",
+        "pk": 4,
+        "fields": {
+            "user": 7,
+            "discipline": null,
+            "lesson": 5,
+            "payment": 4,
+            "purchased_at": "2025-08-24T22:58:00Z"
+        }
+    },
+    {
+        "model": "Payments.purchasedcontent",
+        "pk": 5,
+        "fields": {
+            "user": 9,
+            "discipline": null,
+            "lesson": 2,
+            "payment": 5,
+            "purchased_at": "2025-08-24T22:59:00Z"
+        }
+    },
+    {
+        "model": "Payments.purchasedcontent",
+        "pk": 6,
+        "fields": {
+            "user": 9,
+            "discipline": null,
+            "lesson": 6,
+            "payment": 6,
+            "purchased_at": "2025-08-24T23:00:00Z"
+        }
+    },
+    {
+        "model": "Lessons.userlessonprogress",
+        "pk": 1,
+        "fields": {
+            "user": 3,
+            "lesson": 1,
+            "is_completed": true,
+            "current_time": 100.0,
+            "watched_duration": 100,
+            "last_watched_at": "2025-08-24T23:05:00Z"
+        }
+    },
+    {
+        "model": "Lessons.userlessonprogress",
+        "pk": 2,
+        "fields": {
+            "user": 3,
+            "lesson": 3,
+            "is_completed": false,
+            "current_time": 50.0,
+            "watched_duration": 50,
+            "last_watched_at": "2025-08-24T23:06:00Z"
+        }
+    },
+    {
+        "model": "Lessons.userlessonprogress",
+        "pk": 3,
+        "fields": {
+            "user": 7,
+            "lesson": 1,
+            "is_completed": true,
+            "current_time": 120.0,
+            "watched_duration": 120,
+            "last_watched_at": "2025-08-24T23:07:00Z"
+        }
+    },
+    {
+        "model": "Lessons.userlessonprogress",
+        "pk": 4,
+        "fields": {
+            "user": 7,
+            "lesson": 5,
+            "is_completed": true,
+            "current_time": 90.0,
+            "watched_duration": 90,
+            "last_watched_at": "2025-08-24T23:08:00Z"
+        }
+    },
+    {
+        "model": "Tests.quizattempt",
+        "pk": 1,
+        "fields": {
+            "user": 3,
+            "quiz": 1,
+            "start_time": "2025-08-24T23:10:00Z",
+            "end_time": "2025-08-24T23:11:00Z",
+            "score": 2,
+            "is_completed": true
+        }
+    },
+    {
+        "model": "Tests.quizattempt",
+        "pk": 2,
+        "fields": {
+            "user": 7,
+            "quiz": 1,
+            "start_time": "2025-08-24T23:12:00Z",
+            "end_time": "2025-08-24T23:13:00Z",
+            "score": 2,
+            "is_completed": true
+        }
+    },
+    {
+        "model": "Tests.quizattempt",
+        "pk": 3,
+        "fields": {
+            "user": 7,
+            "quiz": 5,
+            "start_time": "2025-08-24T23:14:00Z",
+            "end_time": "2025-08-24T23:15:00Z",
+            "score": 2,
+            "is_completed": true
+        }
+    }
+]
