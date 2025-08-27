@@ -30,8 +30,9 @@ class YooKassaService:
                 secret_key=settings.YOOKASSA_SECRET_KEY
             )
 
-    def create_payment(self, amount: Decimal, description: str, return_url: str, 
-                      transaction_id: str = None) -> dict:
+    @staticmethod
+    def create_payment(amount: Decimal, description: str, return_url: str,
+                       transaction_id: str = None) -> dict:
         """
         Создает платеж в ЮKassa.
         """
@@ -77,7 +78,8 @@ class YooKassaService:
             logger.error(f"Ошибка создания платежа ЮKassa: {str(e)}")
             raise Exception(f"Не удалось создать платеж: {str(e)}")
 
-    def get_payment_info(self, payment_id: str) -> dict:
+    @staticmethod
+    def get_payment_info(payment_id: str) -> dict:
         """
         Получает информацию о платеже.
         """
@@ -99,7 +101,8 @@ class YooKassaService:
             logger.error(f"Ошибка получения информации о платеже {payment_id}: {str(e)}")
             raise Exception(f"Не удалось получить информации о платеже: {str(e)}")
 
-    def confirm_payment(self, payment_id: str) -> bool:
+    @staticmethod
+    def confirm_payment(payment_id: str) -> bool:
         """
         Подтверждает платеж (если требуется ручное подтверждение).
         """
@@ -119,7 +122,8 @@ class YooKassaService:
             logger.error(f"Ошибка подтверждения платежа {payment_id}: {str(e)}")
             raise Exception(f"Не удалось подтвердить платеж: {str(e)}")
 
-    def cancel_payment(self, payment_id: str, reason: str = "canceled_by_merchant") -> bool:
+    @staticmethod
+    def cancel_payment(payment_id: str, reason: str = "canceled_by_merchant") -> bool:
         """
         Отменяет платеж.
         """
@@ -132,7 +136,8 @@ class YooKassaService:
             logger.error(f"Ошибка отмены платежа {payment_id}: {str(e)}")
             raise Exception(f"Не удалось отменить платеж: {str(e)}")
 
-    def create_refund(self, payment_id: str, amount: Decimal = None, reason: str = None) -> dict:
+    @staticmethod
+    def create_refund(payment_id: str, amount: Decimal = None, reason: str = None) -> dict:
         """
         Создает возврат по платежу.
         """
@@ -178,7 +183,7 @@ class YooKassaService:
             return True
 
         # TODO: Добавить проверку подписи для продакшена
-        # Пример кода для проверки:
+        # Код для проверки. Проверяем, что уведомление от юкасса пришло, а не от мошенника:
         # from yookassa.domain.notification import WebhookNotificationFactory
         #
         # try:
@@ -189,7 +194,8 @@ class YooKassaService:
 
         return True
 
-    def get_test_payment_data(self) -> dict:
+    @staticmethod
+    def get_test_payment_data() -> dict:
         """
         Возвращает тестовые данные для разработки.
         """
