@@ -38,4 +38,3 @@ output = coverage.xml
 [paths]
 source =
     .
-    D:/Project/courses/LearningPlatform
