@@ -14,11 +14,32 @@ LearningPlatform — образовательная платформа на Djan
 ---
 
 ## 1. Быстрый старт — Docker (рекомендуется)
-1. Склонируйте репозиторий:
+1. Склонируйте репозиторий.
+
+Выбор команды зависит от оболочки. && работает в Bash, Git Bash, WSL и в большинстве современных шеллов; для максимальной совместимости приведены варианты для разных сред.
+
+Unix / macOS / Git Bash / WSL (однострочно):
 
 ```bash
 git clone <repo-url> && cd LearningPlatform
 ```
+
+Windows (cmd.exe) — безопасно для всех версий Windows:
+
+```cmd
+git clone <repo-url>
+cd LearningPlatform
+```
+
+PowerShell (если && не поддерживается):
+
+```powershell
+git clone <repo-url>; Set-Location LearningPlatform
+# или
+git clone <repo-url>; cd LearningPlatform
+```
+
+Если хотите оставить одну строку в README — используйте Bash-версию и рядом укажите примечание о Windows.
 
 2. Скопируйте пример переменных окружения и отредактируйте `.env` (см. раздел ниже):
 
@@ -140,3 +161,64 @@ python manage.py runserver
   - stripe_demo.py / yookassa_demo.py — простые скрипты для проверки подключения к платёжным сервисам и создания тестовых платежей.
 
 ---
+
+## 8. Дальше — куда идти (рекомендуемая последовательность чтения)
+README должен быть "входной картой". Ниже — простая логика переходов в зависимости от вашей цели. В README полезно оставить ссылку на следующий документ по логике: короткое описание + ссылка.
+
+- Развернуть проект и начать разработку (Docker): сначала следуйте разделу 1 этого README, затем:
+  - Если планируете работать с фоновой обработкой задач: далее — CELERY_GUIDE.md (запуск Celery, Flower, конфигурация)
+  - Если нужно проверить платежи/симуляцию транзакций: далее — Payments/QUICK_START.md
+  - Если нужно тестировать API вручную: далее — API_TESTING_GUIDE.md
+
+- Локальная разработка без Docker: после раздела 2 README — посмотрите:
+  - CELERY_GUIDE.md — если используются фоновые задачи
+  - Payments/QUICK_START.md — настройка тестовых платёжных сценариев
+
+- Полезные детали и отладка:
+  - Для загрузки/очистки demo-данных: utils/clear_and_load_fixtures.py (см. раздел 4)
+  - Для быстрого создания пользователей/цен: utils/scripts_for_demo/*
+
+Пример записи в README рядом с Quick Start (коротко):
+
+"Дальше: если вы разворачиваете проект через Docker и планируете использовать Celery — перейдите в CELERY_GUIDE.md; если нужна проверка платёжной логики — откройте Payments/QUICK_START.md."
+
+---
+
+Пошаговая «1 → 2 → 3» последовательность (от клона до работы и тестирования)
+
+1) Клонирование и запуск (Quick Start — Docker)
+   - Склонируйте репозиторий и перейдите в папку проекта (см. команда выше).
+   - Создайте .env из .env.example и заполните значения.
+   - Запустите: docker-compose up -d --build
+   - Запустите миграции и (опционально) загрузите фикстуры: docker-compose exec web python manage.py migrate && docker-compose exec web python utils/clear_and_load_fixtures.py --yes
+
+2) Настройка дополнительной инфраструктуры и сервисов
+   - Redis/Celery (см. CELERY_GUIDE.md). Для локали можно запустить контейнер redis.
+   - Настройка платёжных провайдеров: заполните ключи в .env и следуйте Payments/QUICK_START.md (YooKassa/Stripe).
+   - Настройте webhook (ngrok / Cloudflare Tunnel) для локальной отладки платежей.
+
+3) Тестирование и отладка
+   - API: используйте API_TESTING_GUIDE.md для примеров curl и получения JWT токенов.
+   - Скрипты для разработки: utils/scripts_for_demo/* (создать пользователей/цен/демо‑платежи).
+   - Тесты: запустите pytest (локально или в контейнере через Makefile/dev.py). См. pytest.ini и config/test_settings.py.
+
+Эта последовательность — минимальный путь от A до Z: клонирование → окружение и сервисы → тестирование и отладка. Если нужно, могу превратить её в отдельный GETTING_STARTED.md с чек‑листом и командой копирования/вставки.
+
+---
+
+Краткий чек‑лист (Copy & Paste для быстрого запуска)
+
+# Docker (рекомендуется)
+cp .env.example .env && docker-compose up -d --build && docker-compose exec web python manage.py migrate && docker-compose exec web python utils/clear_and_load_fixtures.py --yes
+
+# Локально (без Docker)
+python -m venv .venv && .venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+cp .env.example .env
+python manage.py migrate
+python utils/clear_and_load_fixtures.py --yes
+
+---
+
+← [Назад: «Документация проекта»](README.md) | **Далее:** [CELERY_GUIDE.md](CELERY_GUIDE.md) → | [Все руководства](README.md)
+

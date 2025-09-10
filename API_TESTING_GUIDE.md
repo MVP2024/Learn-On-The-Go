@@ -76,3 +76,7 @@ curl -X POST http://localhost:8000/api/payments/create_payment/ \
 - Для локального тестирования webhook используйте ngrok/Cloudflare Tunnel и укажите публичный HTTPS URL
 
 Если нужно, могу подготовить набор curl/HTTPie команд для наиболее часто используемых сценариев (мигрции, загрузка фикстур, создание пользователей, покупка контента).
+
+---
+
+← [Назад: PAYMENTS_SUMMARY](PAYMENTS_SUMMARY.md) | [← В README](README.md) | **Далее:** [CELERY_GUIDE.md](CELERY_GUIDE.md) → | [Все руководства](README.md#6-документы-и-подробные-руководства)

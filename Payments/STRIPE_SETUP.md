@@ -43,3 +43,7 @@ BASE_URL=http://localhost:8000
 - Для тестов используйте STRIPE_TEST_MODE=True.
 
 Если нужно — подготовлю готовые curl/JS примеры интеграции или подробный пример webhook handler.
+
+---
+
+← [← В YOOKASSA_SETUP.md](YOOKASSA_SETUP.md) | [← В README](../README.md) | **Далее:** [PAYMENTS_SUMMARY.md](../PAYMENTS_SUMMARY.md) → | [Все руководства](../README.md#6-документы-и-подробные-руководства)

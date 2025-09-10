@@ -66,3 +66,7 @@ https://<ваш-tunnel>.ngrok.io/api/payments/yookassa-webhook/
 - Скрипты в `utils/scripts_for_demo` помогут создать тестовый платеж и получить confirmation_url.
 
 Если хотите, подготовлю готовые curl‑примеры для создания платежа и обработки webhook или краткий пример фронтенд‑флоу.
+
+---
+
+← [← В QUICK_START](QUICK_START.md) | [← В README](../README.md) | **Далее:** [STRIPE_SETUP.md](STRIPE_SETUP.md) → | [Все руководства](../README.md#6-документы-и-подробные-руководства)

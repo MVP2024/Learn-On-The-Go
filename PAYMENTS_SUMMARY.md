@@ -33,10 +33,14 @@
 
 Безопасность и эксплуатация
 - Никогда не храните секреты в репозитории — используйте .env (в .gitignore) и CI-секреты.
-- Webhook в продакшене должен быть доступен по HTTPS и проверяться на подпись.
+- Webhook в продакшне должен быть доступен по HTTPS и проверяться на подпись.
 - Для локального тестирования webhook используйте туннели (ngrok/Cloudflare Tunnel).
 
 Быстрый старт (см. подробный QUICK_START.md)
 1. Применить миграции: python manage.py migrate
 2. Настроить цены: python utils/scripts_for_demo/setup_prices.py [setup|free|discount]
 3. Создать платёж через API /api/payments/create_payment/
+
+---
+
+← [← В README](README.md) | **Далее:** [Payments/QUICK_START.md](Payments/QUICK_START.md) → | [Все руководства](README.md#6-документы-и-подробные-руководства)

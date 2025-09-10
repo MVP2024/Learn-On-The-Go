@@ -128,3 +128,7 @@ celery -A config flower
 
 - В проекте задачи объявлены в utils/celery_tasks.py — там же реализован TaskWrapper, который позволяет запускать задачи синхронно в тестах, если Celery недоступен.
 - Для тестов Celery настроен в config/test_settings.py (CELERY_ALWAYS_EAGER=True).
+
+---
+
+← [Назад: README](README.md) | [← В README](README.md) | **Далее:** [PAYMENTS_SUMMARY.md](PAYMENTS_SUMMARY.md) → | [Все руководства](README.md#6-документы-и-подробные-руководства)

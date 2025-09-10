@@ -62,3 +62,7 @@ https://<ваш-tunnel>.ngrok.io/api/payments/yookassa-webhook/
 - Для продакшна отключите тестовый режим (YOOKASSA_TEST_MODE=False) и проверьте права доступа.
 
 Если нужно, подготовлю curl-примеры для создания платежа и обработки webhook или интеграцию с фронтендом.
+
+---
+
+← [← В PAYMENTS_SUMMARY](../PAYMENTS_SUMMARY.md) | [← В README](../README.md) | **Далее:** [YOOKASSA_SETUP.md](YOOKASSA_SETUP.md) → | [Все руководства](../README.md#6-документы-и-подробные-руководства)
