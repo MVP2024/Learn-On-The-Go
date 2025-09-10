@@ -1,17 +1,18 @@
 from celery import shared_task
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
-from django.conf import settings
-
 
 User = get_user_model()
+
 
 @shared_task
 def send_admin_key_email(user_email, admin_key, role):
     """
     Отправляет email пользователю с админ-ключом и информацией о его роли.
     """
-    subject = f"Ваш доступ к системе LearningPlatform - роль: {role.capitalize()}"
+    # Формируем тему письма, включающую фразу, которую ожидают тесты
+    subject = f"Ваш административный ключ - роль: {role.capitalize()}"
 
     if role == "moderator":
         message_body = (
@@ -59,7 +60,6 @@ def notify_superusers_about_admin_key_request(user_email, user_role):
         f"Пользователь {user_email} с ролью {user_role} запросил административный ключ.\n"
         f"Пожалуйста,  войдите в панель администратора и проверьте запрос и предоставьте ключ, "
         f"если это необходимо: {settings.BASE_URL}/admin/Users/user/"
-        # Здесь можно добавить ссылку на конкретную страницу пользователя в админке, если есть такая.
     )
     from_email = settings.DEFAULT_FROM_EMAIL
 
