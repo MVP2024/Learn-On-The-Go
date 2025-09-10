@@ -1,8 +1,6 @@
-version: '3.8'
-
 # Docker Compose для локальной разработки LearningPlatform
 # - использует переменные из файла .env в корне проекта
-# - предназначен для dev: зависимости устанавливаются при старте контейнера (удобно для разработки)
+# - предназначен для dev: зависимости устанавливаются в образе (чтобы команды внутри контейнера работали одинаково)
 # - для продакшена рекомендуем собрать отдельный образ с gunicorn/nginx и не устанавливать зависимости на старте
 
 services:
@@ -42,23 +40,25 @@ services:
     restart: unless-stopped
 
   web:
-    # Для dev мы используем официальный Python образ и устанавливаем зависимости при старте.
-    image: python:3.11-slim
+    # Строим образ на основе docker/Dockerfile (в него уже попадают зависимости из requirements.txt)
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     env_file:
       - .env
     working_dir: /code
     volumes:
       - ./:/code:cached
+      - ./docker/entrypoint.sh:/code/docker/entrypoint.sh:ro
       - static_volume:/code/staticfiles
       - media_volume:/code/media
     ports:
       - "8000:8000"
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: ["/bin/bash", "-lc", "pip install --no-cache-dir -r requirements.txt && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]
+      - db
+      - redis
+    entrypoint: ["/bin/bash", "/code/docker/entrypoint.sh"]
+    command: ["web"]
     environment:
       # Дополнительные переменные окружения полезные для Django
       - PYTHONUNBUFFERED=1
@@ -66,47 +66,59 @@ services:
     restart: unless-stopped
 
   celery:
-    image: python:3.11-slim
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     env_file:
       - .env
     working_dir: /code
     volumes:
       - ./:/code:cached
+      - ./docker/entrypoint.sh:/code/docker/entrypoint.sh:ro
     depends_on:
       - redis
       - db
-    command: ["/bin/bash", "-lc", "pip install --no-cache-dir -r requirements.txt && celery -A config worker --loglevel=info --concurrency=2"]
+    entrypoint: ["/bin/bash", "/code/docker/entrypoint.sh"]
+    command: ["celery"]
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
     restart: unless-stopped
 
   celery-beat:
-    image: python:3.11-slim
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     env_file:
       - .env
     working_dir: /code
     volumes:
       - ./:/code:cached
+      - ./docker/entrypoint.sh:/code/docker/entrypoint.sh:ro
     depends_on:
       - redis
       - db
-    command: ["/bin/bash", "-lc", "pip install --no-cache-dir -r requirements.txt && celery -A config beat --loglevel=info"]
+    entrypoint: ["/bin/bash", "/code/docker/entrypoint.sh"]
+    command: ["celery-beat"]
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
     restart: unless-stopped
 
   # Опционально: Flower для мониторинга Celery
   flower:
-    image: python:3.11-slim
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     env_file:
       - .env
     working_dir: /code
     volumes:
       - ./:/code:cached
+      - ./docker/entrypoint.sh:/code/docker/entrypoint.sh:ro
     depends_on:
       - redis
       - db
-    command: ["/bin/bash", "-lc", "pip install --no-cache-dir -r requirements.txt && celery -A config flower --port=5555"]
+    entrypoint: ["/bin/bash", "/code/docker/entrypoint.sh"]
+    command: ["flower"]
     ports:
       - "5555:5555"
     restart: unless-stopped
