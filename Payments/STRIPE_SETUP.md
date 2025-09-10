@@ -42,7 +42,6 @@ BASE_URL=http://localhost:8000
 - Проверяйте подписи webhook в продакшне, используйте STRIPE_WEBHOOK_SECRET.
 - Для тестов используйте STRIPE_TEST_MODE=True.
 
-Если нужно — подготовлю готовые curl/JS примеры интеграции или подробный пример webhook handler.
 
 ---
 

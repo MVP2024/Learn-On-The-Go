@@ -65,7 +65,6 @@ https://<ваш-tunnel>.ngrok.io/api/payments/yookassa-webhook/
 - Для локальной отладки webhook используйте ngrok; проверяйте логи Django и ЮKassa.
 - Скрипты в `utils/scripts_for_demo` помогут создать тестовый платеж и получить confirmation_url.
 
-Если хотите, подготовлю готовые curl‑примеры для создания платежа и обработки webhook или краткий пример фронтенд‑флоу.
 
 ---
 

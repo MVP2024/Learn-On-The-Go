@@ -68,7 +68,8 @@ services:
       - redis
 ```
 
-В продакшне: используйте process manager (systemd / supervisor) или оркестрацию (k8s). Не запускайте worker и beat из-под учётной записи root в продакшене.
+В продакшне: используйте process manager (systemd / supervisor) или оркестрацию (k8s). 
+Не запускайте worker и beat из-под учётной записи root в продакшене.
 
 ---
 
