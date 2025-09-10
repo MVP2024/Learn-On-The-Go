@@ -1,13 +1,16 @@
 import os
-import django
 from decimal import Decimal
+
+import django
 
 # Настройка Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 from django.conf import settings
+
 from Payments.yookassa_service import YooKassaService
+
 
 def test_yookassa():
     print("=== Тестирование ЮKassa ===")
@@ -22,10 +25,10 @@ def test_yookassa():
     try:
         service = YooKassaService()
         payment = service.create_payment(
-            amount=Decimal('100.00'),
+            amount=Decimal("100.00"),
             description="Тестовый платеж ЮKassa",
             return_url="https://example.com/success",
-            transaction_id="test_payment_123"
+            transaction_id="test_payment_123",
         )
 
         print("✅ Платеж успешно создан!")
@@ -42,6 +45,7 @@ def test_yookassa():
 
     except Exception as e:
         print(f"❌ Ошибка: {e}")
+
 
 if __name__ == "__main__":
     test_yookassa()
