@@ -1,17 +1,24 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from Disciplines.models import Section, Discipline
-from .models import Lesson, UserLessonProgress
-from .validators import validate_video_url, validate_video_file_extension
+from Disciplines.models import Discipline, Section
 from utils.mixins import ProfanityFilterMixin
-from drf_spectacular.utils import extend_schema_field
+
+from .models import Lesson, UserLessonProgress
+from .validators import validate_video_file_extension, validate_video_url
 
 
 class UserLessonProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserLessonProgress
-        fields = '__all__'
-        read_only_fields = ('user', 'lesson', 'is_completed', 'watched_duration', 'last_watched_at')
+        fields = "__all__"
+        read_only_fields = (
+            "user",
+            "lesson",
+            "is_completed",
+            "watched_duration",
+            "last_watched_at",
+        )
 
 
 class LessonSerializer(ProfanityFilterMixin, serializers.ModelSerializer):
@@ -19,20 +26,24 @@ class LessonSerializer(ProfanityFilterMixin, serializers.ModelSerializer):
         required=False,
         allow_blank=True,
         validators=[validate_video_url],
-        help_text="URL видео урока (например, ссылка на RuTube)."
+        help_text="URL видео урока (например, ссылка на RuTube).",
     )
     video_file = serializers.FileField(
         required=False,
         allow_null=True,
         validators=[validate_video_file_extension],
-        help_text="Файл видео урока (допустимые форматы: .mp4, .avi, .mov, mkv, webm, flv)."
+        help_text="Файл видео урока (допустимые форматы: .mp4, .avi, .mov, mkv, webm, flv).",
     )
     # Добавляем поле для отображения прогресса пользователя
     user_progress = serializers.SerializerMethodField()
     discipline = serializers.SlugRelatedField(
-        slug_field="title",
+        slug_field="slug",
         queryset=Discipline.objects.all(),
-        help_text="Название дисциплины, к которой относится урок.",
+        help_text=(
+            "Slug дисциплины (уникальный идентификатор), к которой относится урок. "
+            "Введите slug дисциплины (например: 'matematika_7') или числовой ID. "
+            "Не вводите название дисциплины — используйте slug или ID для однозначного выбора."
+        ),
     )
     section = serializers.SlugRelatedField(
         slug_field="title",
@@ -68,21 +79,27 @@ class LessonSerializer(ProfanityFilterMixin, serializers.ModelSerializer):
         try:
             price_config = obj.price_config
             return {
-                'price': str(price_config.price),
-                'current_price': str(price_config.get_current_price()),
-                'is_free': price_config.is_free,
-                'discount_price': str(price_config.discount_price) if price_config.discount_price else None,
-                'discount_end_date': price_config.discount_end_date,
-                'has_discount': bool(price_config.discount_price and price_config.discount_end_date)
+                "price": str(price_config.price),
+                "current_price": str(price_config.get_current_price()),
+                "is_free": price_config.is_free,
+                "discount_price": (
+                    str(price_config.discount_price)
+                    if price_config.discount_price
+                    else None
+                ),
+                "discount_end_date": price_config.discount_end_date,
+                "has_discount": bool(
+                    price_config.discount_price and price_config.discount_end_date
+                ),
             }
         except Exception:
             return {
-                'price': None,
-                'current_price': None,
-                'is_free': False,
-                'discount_price': None,
-                'discount_end_date': None,
-                'has_discount': False
+                "price": None,
+                "current_price": None,
+                "is_free": False,
+                "discount_price": None,
+                "discount_end_date": None,
+                "has_discount": False,
             }
 
     @extend_schema_field(serializers.BooleanField)
@@ -90,15 +107,14 @@ class LessonSerializer(ProfanityFilterMixin, serializers.ModelSerializer):
         """
         Проверяет, есть ли у текущего пользователя доступ к уроку.
         """
-        request = self.context.get('request')
+        request = self.context.get("request")
         if not request or not request.user.is_authenticated:
             return False
-
         # Для студентов проверяем покупку
-        if request.user.groups.filter(name='student').exists():
+        if request.user.groups.filter(name="student").exists():
             from Payments.services import PaymentService
-            return PaymentService.has_access_to_lesson(request.user, obj)
 
+            return PaymentService.has_access_to_lesson(request.user, obj)
         # Для остальных ролей (учителя, админы, модераторы) - всегда true
         return True
 

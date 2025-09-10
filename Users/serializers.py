@@ -1,13 +1,15 @@
+from django.contrib.auth.models import Group
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+from rest_framework.fields import empty
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .tasks import send_admin_key_email
+
 from Admin.models import AdminKey
 from Students.models import Student
 from Teachers.models import Teacher
-from .models import User
-from django.contrib.auth.models import Group
 from utils.mixins import ProfanityFilterMixin
+
+from .models import User
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -19,7 +21,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = "email"
 
     def validate(self, attrs):
-        # Вызываем родительский метод для стандартной аутентификации email/password
         data = super().validate(attrs)
         return data
 
@@ -37,22 +38,27 @@ class AdminKeyLoginSerializer(serializers.Serializer):
         required=True,
     )
 
+    def __init__(self, instance=None, data=empty, **kwargs):
+        # корректный вызов родительского конструктора (ключевые аргументы)
+        super().__init__(instance=instance, data=data, **kwargs)
+        self.user = None
+
     def validate(self, attrs):
+        # Если метод уже выполнил успешную валидацию — возвращаемся (идемпотентность)
+        if getattr(self, "user", None) is not None:
+            return {}
+
         email = attrs.get("email")
         password = attrs.get("password")
         admin_key = attrs.get("admin_key")
-
         if not email or not password or not admin_key:
             raise serializers.ValidationError("Email, пароль и админ-ключ обязательны.")
-
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             raise serializers.ValidationError("Неверные учетные данные.")
-
         if not user.check_password(password):
             raise serializers.ValidationError("Неверные учетные данные.")
-
         if (
             user.role not in ["admin", "moderator"]
             or not user.is_admin_key_required
@@ -61,19 +67,17 @@ class AdminKeyLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "Для вашей роли или статуса административный ключ не требуется или уже был использован."
             )
-
         try:
             admin_key_obj = AdminKey.objects.get(
                 user=user, key=admin_key, is_active=True
             )
+            # помечаем, что пользователь вошёл с ключом и деактивируем ключ
             user.has_logged_in_with_key = True
             user.save()
             admin_key_obj.is_active = False
             admin_key_obj.save()
         except AdminKey.DoesNotExist:
             raise serializers.ValidationError("Неверный или неактивный админ-ключ.")
-
-        # Успешная аутентификация, возвращаем пользователя
         self.user = user
         return {}
 
@@ -84,11 +88,13 @@ class RegisterSerializer(ProfanityFilterMixin, serializers.ModelSerializer):
     )
     role = serializers.ChoiceField(
         choices=User.ROLE_CHOICES,
-        help_text="Выберите роль пользователя: 'student', 'teacher', 'moderator' или 'admin'."
-        "Пользователи с ролями 'moderator' и 'admin' будут созданы, но потребуют активации администратором для получения ключа."
-        "Пользователи с ролями 'student' и 'teacher' могут зарегистрироваться без ключа.",
+        help_text=(
+            "Выберите роль пользователя: 'student', 'teacher', 'moderator' или 'admin'."
+            "Пользователи с ролями 'moderator' и 'admin' будут созданы, но потребуют активации администратором для получения ключа."
+            "Пользователи с ролями 'student' и 'teacher' могут зарегистрироваться без ключа."
+        ),
         error_messages={
-            "invalid_choice": f'Указанная роль "{input}" не является допустимой. Пожалуйста, выберите роль пользователя.'
+            "invalid_choice": "Указанная роль не является допустимой. Пожалуйста, выберите роль пользователя."
         },
     )
 
@@ -112,39 +118,24 @@ class RegisterSerializer(ProfanityFilterMixin, serializers.ModelSerializer):
         role = validated_data.pop("role")
         user = User.objects.create_user(**validated_data)
         user.role = role
-
         if role in ["admin", "moderator"]:
-            # При регистрации админов/модераторов, им пока не выдается ключ.
-            # Ключ будет генерироваться и выдаваться суперпользователем позже.
-            user.is_admin_key_required = (
-                True  # Флаг, что этому пользователю ключ потребуется
-            )
-            user.is_active = (
-                False  # Пользователь неактивен до выдачи ключа суперпользователем
-            )
+            user.is_admin_key_required = True
+            user.is_active = False
             user.save()
             group, _ = Group.objects.get_or_create(name=role)
             user.groups.add(group)
-            # Отправляем уведомление суперпользователю о новой заявке, если нужно
-            # send_email_to_superusers_about_new_admin_request(user.email, user.role)
         else:
-            user.save()  # Сохраняем обычного пользователя
+            user.save()
             group, _ = Group.objects.get_or_create(name=role)
             user.groups.add(group)
             if role == "teacher":
                 Teacher.objects.create(user=user)
             elif role == "student":
                 Student.objects.create(user=user)
-
         return user
 
 
 class UserProfilePublicSerializer(ProfanityFilterMixin, serializers.ModelSerializer):
-    """
-    Сериализатор для публичного просмотра профиля пользователя.
-    Отображает только общую информацию.
-    """
-
     disciplines_taught = serializers.SerializerMethodField()
 
     class Meta:
@@ -164,11 +155,6 @@ class UserProfilePublicSerializer(ProfanityFilterMixin, serializers.ModelSeriali
 
 
 class UserProfilePrivateSerializer(ProfanityFilterMixin, serializers.ModelSerializer):
-    """
-    Сериализатор для приватного просмотра/редактирования собственного профиля.
-    Отображает всю информацию, кроме пароля.
-    """
-
     class Meta:
         model = User
         fields = [
@@ -186,15 +172,11 @@ class UserProfilePrivateSerializer(ProfanityFilterMixin, serializers.ModelSerial
             "email",
             "is_admin_key_required",
             "has_logged_in_with_key",
-        ]  # Запрещаем изменение email и is_admin_key_required после регистрации
+        ]
         profanity_fields = ["first_name", "last_name", "patronymic"]
 
 
 class RequestAdminKeySerializer(serializers.Serializer):
-    """
-    Сериализатор для запроса админ-ключа.
-    """
-
     email = serializers.EmailField(
         help_text="Email пользователя, для которого запрашивается админ-ключ."
     )
