@@ -1,195 +1,78 @@
-# 🚀 Руководство по тестированию API LearningPlatform
+# Руководство по тестированию API — LearningPlatform
 
-## ✅ Исправленные проблемы
+Коротко: как подготовиться к тестированию и часто используемые запросы.
 
-### 1. Настройки аутентификации
-- ✅ Убран конфликт в `DEFAULT_PERMISSION_CLASSES`
-- ✅ Исправлены настройки JWT токенов (`USER_ID_FIELD`)
-- ✅ Добавлен debug endpoint для тестирования
-- ✅ Создан скрипт для корректных пользователей
+1. Подготовка окружения
+- Создайте `.env` из `.env.example` и заполните значения (локально можно оставить тестовые значения из фикстур).
+- Для тестовой локальной базы удобно использовать fixtures: `python utils/clear_and_load_fixtures.py --yes` (внимание: очищает данные).
+- Для создания только пользователей используйте: `python utils/scripts_for_demo/setup_users.py`.
 
-## 🛠️ Подготовка к тестированию
+2. Получение токена (JWT)
+- Endpoint: POST /api/token/
+- Пример curl:
 
-### Шаг 0: Очистка и загрузка данных (РЕКОМЕНДУЕТСЯ)
-```
-python clear_and_load_fixtures.py
-```
-Этот скрипт автоматически очистит базу данных и загрузит все тестовые данные.
-
-### Альтернативный способ - создание только пользователей:
-```
-python setup_users.py
-```
-
-### 2. Упрощение API
-- ✅ Все фильтры сделаны опциональными
-- ✅ Убраны сложные фильтры типа `exact` + `icontains`
-- ✅ Поиск объектов работает по ID ИЛИ по названию/email
-
-## 🧪 Пошаговое тестирование
-
-### Шаг 1: Получение токена
-```
+```bash
 curl -X POST http://localhost:8000/api/token/ \
   -H "Content-Type: application/json" \
-  -d '{
-    "email": "teacher_1@a.aa",
-    "password": "Spirocheta77"
-  }'
+  -d '{"email": "teacher_1@a.aa", "password": "Spirocheta77"}'
 ```
 
-**Ответ должен быть:**
-```json
-{
-    "access": "eyJ0eXAiOiJKV1Q...",
-    "refresh": "eyJ0eXAiOiJKV1Q..."
-}
-```
+Ответ: {"access": "...", "refresh": "..."}
 
-### Шаг 2: Тестирование аутентификации
-```
-curl -X GET http://localhost:8000/api/debug-auth/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
+3. Проверка аутентификации (debug)
+- GET /api/debug-auth/ с заголовком Authorization: Bearer <ACCESS_TOKEN>
+- Используйте для быстрой проверки прав и заголовков.
 
-**Ответ должен быть:**
-```json
-{
-    "authenticated": true,
-    "user_id": 2,
-    "user_email": "teacher_1@a.aa",
-    "headers": {
-        "Authorization": "Bearer ...",
-        "Content-Type": "application/json"
-    }
-}
-```
+4. Общие правила по полям и форматам
+- Поле `discipline` в создании/обновлении урока принимает slug (строку) или числовой id. Не передавайте human-readable title.
+- Для платежей: Stripe ожидает суммы в копейках при работе со сторонним SDK; внутри проекта используется Decimal (рубли) — сервисы переводят при необходимости.
 
-### Шаг 3: Простые запросы к API
+5. Примеры запросов
+- Получить все дисциплины:
 
-#### Получить все дисциплины (БЕЗ параметров)
-```
-curl -X GET http://localhost:8000/disciplines/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-#### Получить дисциплину по ID
-```
-curl -X GET http://localhost:8000/disciplines/1/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-#### Получить дисциплину по названию
-```
-curl -X GET http://localhost:8000/disciplines/Алгебра/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-#### Поиск дисциплин (опциональные фильтры)
-```
-curl -X GET "http://localhost:8000/disciplines/?title=Python" \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-#### Получить все уроки
-```
-curl -X GET http://localhost:8000/lessons/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-#### Получить все тесты
-```
-curl -X GET http://localhost:8000/tests/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-#### Получить всех пользователей
-```
-curl -X GET http://localhost:8000/profiles/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-### Шаг 4: Поиск конкретных объектов
-
-#### Поиск урока по ID или названию
-```
-# По ID
-curl -X GET http://localhost:8000/lessons/1/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-
-# По названию
-curl -X GET "http://localhost:8000/lessons/Части речи/" \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-#### Поиск пользователя по ID или email
-```
-# По ID
-curl -X GET http://localhost:8000/profiles/2/ \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-
-# По email
-curl -X GET "http://localhost:8000/profiles/teacher_1@a.aa/" \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-### Шаг 5: Опциональные фильтры
-
-#### Поиск уроков по названию дисциплины
-```
-curl -X GET "http://localhost:8000/lessons/?discipline__title=Алгебра" \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-#### Поиск пользователей по фамилии
-```
-curl -X GET "http://localhost:8000/profiles/?last_name=Иванов" \
-  -H "Authorization: Bearer ВАШ_ACCESS_TOKEN"
-```
-
-## 🎯 Ожидаемые результаты
-
-### ✅ Что должно работать:
-- Все простые GET запросы без параметров
-- Поиск объектов как по ID, так и по названию/email
-- Все фильтры работают опционально
-- Аутентификация через Bearer токен
-
-### ❌ Если что-то не работает:
-1. **401 Unauthorized** - проверьте токен в заголовке Authorization
-2. **404 Not Found** - объект не найден, проверьте ID/название
-3. **400 Bad Request** - проверьте формат запроса
-
-## 🔧 Debug endpoints
-
-### Проверить аутентификацию
-```
-GET /api/debug-auth/
-```
-
-### Получить схему API
 ```bash
-GET /api/schema/
+curl -X GET http://localhost:8000/api/disciplines/ \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
-### Swagger UI
+- Получить дисциплину по id:
+
+```bash
+curl -X GET http://localhost:8000/api/disciplines/1/ \
+  -H "Authorization: Bearer <TOKEN>"
 ```
-http://localhost:8000/api/schema/swagger-ui/
+
+- Создать урок (пример):
+
+```bash
+curl -X POST http://localhost:8000/api/lessons/ \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Интегралы.", "discipline":"matematika_7", "video_url":"https://...", "lesson_order":1}'
 ```
 
-## 📋 Готовые пользователи для тестирования
+- Проверка платежа (создание):
 
-Из fixture файла доступны:
-- **admin@a.aa** / **Spirocheta77** (админ)
-- **teacher_1@a.aa** / **Spirocheta77** (учитель)
-- **student_1@a.aa** / **Spirocheta77** (студент)
-- **moderator_1@a.aa** / **Spirocheta77** (модератор)
+```bash
+curl -X POST http://localhost:8000/api/payments/create_payment/ \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"payment_type":"discipline","discipline_id":1,"payment_method":"yookassa"}'
+```
 
-## 🎉 Теперь API работает просто и понятно!
+6. Частые ошибки и быстрое решение
+- 401 Unauthorized — проверьте access токен и заголовок Authorization
+- 400 Bad Request — проверьте JSON и обязательные поля (см. сериализаторы в коде)
+- 404 Not Found — проверьте, существует ли объект (id/slug) и корректен ли путь
 
-Все основные проблемы исправлены:
-✅ Аутентификация работает  
-✅ Простые запросы без параметров  
-✅ Гибкий поиск по ID и названию  
-✅ Опциональные фильтры  
-✅ Понятная документация  
+7. Тестовые пользователи (fixture)
+- admin@a.aa / Spirocheta77 (админ)
+- teacher_1@a.aa / Spirocheta77 (учитель)
+- student_1@a.aa / Spirocheta77 (студент)
+- moderator_1@a.aa / Spirocheta77 (модератор)
+
+8. Советы
+- Используйте Swagger UI: http://localhost:8000/api/schema/swagger-ui/ — там видно схемы и примеры
+- Для локального тестирования webhook используйте ngrok/Cloudflare Tunnel и укажите публичный HTTPS URL
+
+Если нужно, могу подготовить набор curl/HTTPie команд для наиболее часто используемых сценариев (мигрции, загрузка фикстур, создание пользователей, покупка контента).

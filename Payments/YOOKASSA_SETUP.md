@@ -1,234 +1,68 @@
-# Настройка ЮKassa для LearningPlatform
+# Настройка ЮKassa — LearningPlatform
 
-## 🚀 Быстрое подключение
+Кратко: как быстро подключить и тестировать ЮKassa в локальной и прод окружении.
 
-### 1. Регистрация в ЮKassa
+1. Регистрация и ключи
+- Зарегистрируйтесь в личном кабинете ЮKassa: https://yookassa.ru/developers/
+- Получите shopId и secret key (отдельно для тестового и продакшн режимов).
 
-1. **Перейдите на сайт ЮKassa:**
-   - Тестовый режим: https://yookassa.ru/developers/
-   - Продакшен: https://yookassa.ru/
-
-2. **Зарегистрируйтесь или войдите в аккаунт**
-
-3. **Создайте магазин:**
-   - Заполните основную информацию о вашем проекте
-   - Укажите тип деятельности: "Образовательные услуги"
-   - Добавьте описание платформы
-
-### 2. Получение ключей доступа
-
-В личном кабинете ЮKassa:
-
-1. **Перейдите в раздел "Настройки" → "Интеграция"**
-
-2. **Получите данные для подключения:**
-   ```
-   ID магазина (shopId): 123456
-   Секретный ключ (secret key): live_abc123...
-   ```
-
-3. **Для тестирования используйте тестовые ключи:**
-   ```
-   Тестовый ID магазина: 123456  
-   Тестовый секретный ключ: test_abc123...
-   ```
-
-### 3. Настройка webhook'а
-
-1. **В разделе "HTTP-уведомления":**
-   - URL для уведомлений: `https://ваш-домен.com/api/payments/yookassa-webhook/`
-   - События: 
-     - ✅ `payment.succeeded` - успешный платеж
-     - ✅ `payment.canceled` - отмена платежа  
-     - ✅ `refund.succeeded` - успешный возврат
-
-2. **Для тестирования локально используйте ngrok:**
-   ```
-   # Устанавливаем ngrok
-   npm install -g ngrok
-   
-   # Запускаем туннель
-   ngrok http 8000
-   
-   # Используйте полученный URL:
-   # https://abc123.ngrok.io/api/payments/yookassa-webhook/
-   ```
-
-## ⚙️ Конфигурация проекта
-
-### 1. Переменные окружения (.env)
+2. Переменные окружения (.env)
+Скопируйте `.env.example` в `.env` и заполните поля:
 
 ```env
-# Настройки ЮKassa
 YOOKASSA_SHOP_ID=ваш_shop_id
-YOOKASSA_SECRET_KEY=ваш_секретный_ключ
-YOOKASSA_TEST_MODE=True  # False для продакшена
-
-# Базовый URL вашего сайта
-BASE_URL=https://ваш-домен.com
+YOOKASSA_SECRET_KEY=ваш_secret_key
+YOOKASSA_TEST_MODE=True
+BASE_URL=http://localhost:8000
 ```
 
-### 2. Тестовые данные
+Не храните реальные секреты в репозитории.
 
-**Тестовые номера карт:**
-- ✅ Успешный платеж: `5555555555554444`
-- ❌ Отклонение платежа: `4000000000000002`
-- 🔄 Требует подтверждения: `4000000000000077`
-
-**Тестовые данные карты:**
-```
-Номер: 5555555555554444
-Месяц/год: 12/26
-CVC: 123
-Имя держателя: TEST TEST
-```
-
-## 🛠️ Использование в коде
-
-### Создание платежа
-
-```python
-from Payments.services import PaymentService
-
-# Создаем платеж
-payment = PaymentService.create_payment(
-    user=request.user,
-    payment_type='discipline',
-    discipline_id=1,
-    payment_method='yookassa'
-)
-
-# Получаем URL для перенаправления на оплату
-confirmation_url = payment.yookassa_confirmation_url
-```
-
-### Проверка статуса платежа
-
-```python
-from Payments.yookassa_service import YooKassaService
-
-service = YooKassaService()
-payment_info = service.get_payment_info(payment.yookassa_payment_id)
-
-if payment_info['status'] == 'succeeded':
-    print("Платеж успешно выполнен!")
-
-## 📱 Frontend интеграция
-
-### JavaScript пример
-
-```javascript
-// Создание платежа
-const createPayment = async (disciplineId) => {
-    const response = await fetch('/api/payments/create_payment/', {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            payment_type: 'discipline',
-            discipline_id: disciplineId,
-            payment_method: 'yookassa'
-        })
-    });
-    
-    const payment = await response.json();
-    
-    // Перенаправляем пользователя на страницу оплаты ЮKassa
-    if (payment.yookassa_confirmation_url) {
-        window.location.href = payment.yookassa_confirmation_url;
-    }
-};
-
-// Проверка статуса после возврата с оплаты
-const checkPaymentStatus = async (transactionId) => {
-    const response = await fetch(`/api/payments/check_status/?transaction_id=${transactionId}`, {
-        headers: { 'Authorization': 'Bearer ' + token }
-    });
-    
-    const payment = await response.json();
-    
-    if (payment.status === 'completed') {
-        // Платеж успешен - показываем доступ к контенту
-        showSuccessMessage('Оплата успешно завершена!');
-        redirectToContent();
-    } else if (payment.status === 'failed') {
-        showErrorMessage('Оплата не удалась. Попробуйте еще раз.');
-    }
-};
-```
-
-## 🚨 Безопасность
-
-### Важные моменты:
-
-1. **Никогда не храните секретный ключ в коде!**
-   - Используйте переменные окружения
-   - Не коммитьте .env файлы
-
-2. **Проверяйте подписи webhook'ов в продакшене:**
-   ```python
-   # В файле yookassa_service.py обновите метод validate_webhook_notification
-   # для проверки подписи в продакшене
-   ```
-
-3. **Используйте HTTPS в продакшене:**
-   - ЮKassa требует HTTPS для webhook'ов
-   - Настройте SSL сертификат
-
-## 🐛 Отладка
-
-### Проверка логов
+3. Запуск и тестирование локально
+- Примените миграции и загрузите demo-данные (опционально):
 
 ```bash
-# Логи Django (в settings.py настройте LOGGING)
-tail -f logs/payment.log
-
-# Проверка webhook'ов в ЮKassa
-# В личном кабинете → HTTP-уведомления → История
+python manage.py migrate
+python utils/clear_and_load_fixtures.py --yes
+# или только пользователи:
+python utils/scripts_for_demo/setup_users.py
 ```
 
-### Частые проблемы
+- Запустите сервер и Redis/Celery (если нужны фоновые задачи):
 
-1. **Webhook не работает:**
-   - Проверьте URL доступности
-   - Убедитесь, что порт открыт
-   - Для локальной разработки используйте ngrok
+```bash
+python manage.py runserver
+# Redis (docker):
+docker run -d --name lp-redis -p 6379:6379 redis:alpine
+python start_celery.py  # для разработки
+```
 
-2. **Платежи не создаются:**
-   - Проверьте правильность ключей
-   - Убедитесь в корректности суммы (больше 1 рубля)
+- В проекте есть вспомогательные скрипты для проверки: `utils/scripts_for_demo/yookassa_demo.py` и `yookassa_demo_from_payments.py`.
 
-3. **Ошибки аутентификации:**
-   - Проверьте YOOKASSA_SHOP_ID и YOOKASSA_SECRET_KEY
-   - Убедитесь, что ключи соответствуют режиму (тест/продакшен)
+4. Тестовые карты и данные
+- Тестовая карта (пример): 5555555555554444, срок 12/26, CVC 123 — для успешной оплаты.
+- Карта для отклонения: 4000000000000002
 
-## 🎯 Переход в продакшен
+5. Webhook
+- В продакшне webhook должен быть HTTPS и проверяться на подпись.
+- Для локальной разработки используйте туннель (ngrok/Cloudflare Tunnel) и укажите публичный URL в личном кабинете ЮKassa:
 
-1. **Смените режим:**
-   ```env
-   YOOKASSA_TEST_MODE=False
-   ```
+```
+https://<ваш-tunnel>.ngrok.io/api/payments/yookassa-webhook/
+```
 
-2. **Используйте продакшн ключи:**
-   - Получите их в личном кабинете ЮKassa
-   - Обновите .env файл
+6. Как это используется в проекте
+- API создания платежа: POST /api/payments/create_payment/ — возвращает confirmation_url для перенаправления пользователя (YooKassa) или client_secret (Stripe).
+- Webhook endpoint: POST /api/payments/yookassa-webhook/ — приложение проверяет подпись и обрабатывает события payment.succeeded / payment.canceled.
+- При завершении платежа сигнал Payments.signals.create_purchased_content_on_payment_completion создаёт PurchasedContent (идемпотентно через get_or_create).
 
-3. **Настройте реальный домен:**
-   ```env
-   BASE_URL=https://ваш-реальный-домен.com
-   ```
+7. Производство (prod)
+- Убедитесь, что YOOKASSA_TEST_MODE=False и используете реальные ключи.
+- Webhook: HTTPS + проверка подписи.
+- Храните ключи в секретном хранилище (CI / hosting).
 
-4. **Обновите webhook URL в ЮKassa:**
-   - Замените тестовый URL на продакшн
+8. Отладка
+- Для локальной отладки webhook используйте ngrok; проверяйте логи Django и ЮKassa.
+- Скрипты в `utils/scripts_for_demo` помогут создать тестовый платеж и получить confirmation_url.
 
-5. **Включите проверку подписей webhook'ов**
-
-## 📞 Поддержка
-
-- **Документация ЮKassa:** https://yookassa.ru/developers/
-- **Техподдержка ЮKassa:** support@yookassa.ru
-- **Сообщество разработчиков:** https://t.me/yookassa_api
-
-Готово! Теперь ваша платформа интегрирована с ЮKassa 🎉
+Если хотите, подготовлю готовые curl‑примеры для создания платежа и обработки webhook или краткий пример фронтенд‑флоу.
