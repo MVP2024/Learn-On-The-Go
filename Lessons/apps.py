@@ -1,6 +1,7 @@
 """
 Конфигурация приложения Lessons.
 """
+
 from django.apps import AppConfig
 
 
@@ -8,6 +9,7 @@ class LessonsConfig(AppConfig):
     """
     Настройки конфигурации приложения "Lessons".
     """
+
     default_auto_field = "django.db.models.BigAutoField"
     name = "Lessons"
 
