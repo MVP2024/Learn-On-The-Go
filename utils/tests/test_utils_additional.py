@@ -116,4 +116,3 @@ class CeleryTasksYooKassaBranchesTests(TestCase):
             else:
                 text3 = str(retval3).lower() if retval3 is not None else ""
                 self.assertTrue(any(k in text3 for k in ("pending", "в процессе", "ожида")), msg=f"Ожидался маркер pending в ответе, получили: {text3}")
-
