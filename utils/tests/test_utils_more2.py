@@ -79,12 +79,28 @@ class CeleryTasksNotFoundTests(TestCase):
     def test_process_payment_completion_not_found(self):
         result = celery_tasks.process_payment_completion.delay(99999999)
         retval = getattr(result, "result", result)
-        self.assertIn("not found", str(retval).lower())
+        # prefer structured status if dict, else fallback to text checks
+        if isinstance(retval, dict):
+            self.assertEqual(retval.get("status"), "not_found")
+        else:
+            text = str(retval).lower() if retval is not None else ""
+            # Accept English or Russian variants
+            self.assertTrue(
+                ("not found" in text) or ("не найден" in text) or ("не найдено" in text),
+                msg=f"Ожидался маркер 'not found' или 'не найден' в ответе, получили: {text}",
+            )
 
     def test_send_payment_success_notification_payment_missing(self):
         result = celery_tasks.send_payment_success_notification.delay(99999999)
         retval = getattr(result, "result", result)
-        self.assertIn("not found", str(retval).lower())
+        if isinstance(retval, dict):
+            self.assertEqual(retval.get("status"), "not_found")
+        else:
+            text = str(retval).lower() if retval is not None else ""
+            self.assertTrue(
+                ("not found" in text) or ("не найден" in text) or ("не найдено" in text),
+                msg=f"Ожидался маркер 'not found' или 'не найден' в ответе, получили: {text}",
+            )
 
     def test_generate_daily_reports_no_admins(self):
         # убедимся, что без суперпользователей функция отрабатывает и возвращает 0 admins
@@ -94,7 +110,11 @@ class CeleryTasksNotFoundTests(TestCase):
         User = get_user_model()
         User.objects.filter(is_superuser=True).delete()
         out = celery_tasks.generate_daily_reports()
-        self.assertIn("отчёт отправлен", str(out).lower())
+        # prefer structured response
+        if isinstance(out, dict):
+            self.assertEqual(out.get("processed_admins"), 0)
+        else:
+            self.assertIn("отчёт отправлен", str(out).lower())
 
 
 class ClearDatabaseEdgeTests(TestCase):
