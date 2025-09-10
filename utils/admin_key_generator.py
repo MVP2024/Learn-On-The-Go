@@ -1,6 +1,7 @@
-import secrets
-import django
 import os
+import secrets
+
+import django
 
 # Настраиваем окружение Django
 # этот скрипт запускается как отдельный скрипт, а не как часть Django-приложения, (т.е.не через manage.py),
@@ -9,21 +10,23 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 from django.conf import settings
-from Users.models import User
-from Admin.models import AdminKey  # Импортируем модель AdminKey
 from django.core.mail import send_mail
 from django.db import transaction  # Для атомарных операций
 
+from Admin.models import AdminKey  # Импортируем модель AdminKey
+from Users.models import User
 
-def generate_key_and_message(user):
+
+def generate_key_and_message(user_obj):
     """
     Генерирует уникальный административный ключ и формирует сообщение
-    для отправки по email.
+    для отправки по email. Параметр называется user_obj чтобы не затенять
+    имя `user` из внешней области видимости в других частях файла.
     """
     admin_key = secrets.token_urlsafe(32)
 
     # Используем полное имя, если доступно, иначе email
-    recipient_name = user.full_name if user.full_name else user.email
+    recipient_name = user_obj.full_name if user_obj.full_name else user_obj.email
 
     message_template = f"""
 Привет, {recipient_name}!
@@ -40,10 +43,10 @@ def generate_key_and_message(user):
     return admin_key, message_template
 
 
-
 if __name__ == "__main__":
-    import django
     import os
+
+    import django
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     django.setup()
