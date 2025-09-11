@@ -43,7 +43,7 @@ jobs:
       - name: Lint (black)
         run: black --check .
       - name: Lint (isort)
-        run: isort --check-only .
+        run: isort --profile black --check-only .
       - name: Lint (flake8)
         run: flake8 .
       - name: Run tests
@@ -51,6 +51,8 @@ jobs:
           DJANGO_SETTINGS_MODULE: config.test_settings
         run: |
           pytest -q -o addopts=''
+
+
 
   docker_build:
     name: Build Docker images

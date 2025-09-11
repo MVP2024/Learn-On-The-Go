@@ -281,9 +281,9 @@ def _process_payment_completion_impl(payment_id):
         if payment.status == "pending":
             if getattr(payment, "yookassa_payment_id", None):
                 try:
-                    from Payments.yookassa_service import (
+                    from Payments.yookassa_service import (  # type: ignore
                         YooKassaService,
-                    )  # type: ignore
+                    )
 
                     yookassa_service = YooKassaService()
                     yookassa_payment_info = yookassa_service.get_payment_info(
