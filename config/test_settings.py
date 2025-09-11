@@ -1,4 +1,14 @@
+import os
+
+# Убедитесь, что SECRET_KEY доступен при импорте config.settings — settings.py
+# # может считывать переменные среды во время импорта (и использует SECRET_KEY для установки ключа подписи JWT).
+# # Это значение можно зафиксировать, так как test_settings используется только для тестов.
+os.environ.setdefault("SECRET_KEY", "test-secret-key")
+
 from .settings import *  # noqa: F401,F403
+
+# Убедитесь, что SIMPLE_JWT использует тестовый SECRET_KEY, даже если он был создан ранее в настройках.
+SIMPLE_JWT["SIGNING_KEY"] = SECRET_KEY
 
 # Используем in-memory SQLite для тестов для скорости
 DATABASES = {
