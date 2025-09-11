@@ -34,7 +34,9 @@ class PaymentViewsStripeTests(TestCase):
 
     @patch("Payments.views.StripeService.create_payment_intent")
     @patch("Payments.views.PaymentService.create_payment")
-    def test_create_payment_stripe_flow_adds_client_secret(self, mock_create_payment, mock_intent):
+    def test_create_payment_stripe_flow_adds_client_secret(
+        self, mock_create_payment, mock_intent
+    ):
         """Создание платежа с payment_method=stripe добавляет client_secret в ответ и сохраняет ID intent'а."""
         # Готовим платеж, который «создаёт» PaymentService.create_payment
         payment = Payment.objects.create(
@@ -56,7 +58,9 @@ class PaymentViewsStripeTests(TestCase):
             "lesson_id": self.lesson.id,
             "payment_method": "stripe",
         }
-        resp = self.client.post("/api/payments/create_payment/", data=payload, format="json")
+        resp = self.client.post(
+            "/api/payments/create_payment/", data=payload, format="json"
+        )
         self.assertEqual(resp.status_code, 201)
         data = resp.json()
         self.assertIn("stripe_client_secret", data)
@@ -68,8 +72,9 @@ class PaymentViewsStripeTests(TestCase):
 
     def test_price_config_perform_create_permission_denied(self):
         """perform_create должен кидать PermissionDenied для не-админа/модератора/суперпользователя."""
-        from rest_framework.test import APIRequestFactory
         from rest_framework.exceptions import PermissionDenied
+        from rest_framework.test import APIRequestFactory
+
         from Payments.views import PriceConfigurationViewSet
 
         factory = APIRequestFactory()

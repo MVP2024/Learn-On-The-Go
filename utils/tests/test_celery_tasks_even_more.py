@@ -33,8 +33,10 @@ class CeleryTasksEvenMoreTests(TestCase):
     def test_process_payment_completion_without_yookassa_calls_complete(self):
         """Когда у платежа нет yookassa_payment_id, вызывается PaymentService.complete_payment."""
         from decimal import Decimal
-        from Payments.models import Payment
+
         from django.contrib.auth import get_user_model
+
+        from Payments.models import Payment
 
         User = get_user_model()
         u = User.objects.create_user(email="pc_no_yoo@a.aa", password="pw")
@@ -46,7 +48,9 @@ class CeleryTasksEvenMoreTests(TestCase):
             transaction_id="tx-no-yoo-1",
         )
 
-        with patch("Payments.services.PaymentService.complete_payment", return_value=None) as mock_complete:
+        with patch(
+            "Payments.services.PaymentService.complete_payment", return_value=None
+        ) as mock_complete:
             out = ct._process_payment_completion_impl(p.id)
             mock_complete.assert_called_once_with("tx-no-yoo-1")
             self.assertIsInstance(out, dict)

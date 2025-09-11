@@ -44,10 +44,12 @@ class CeleryTasksGenerateEmailExceptionsTests(TestCase):
     def test_send_payment_success_notification_mail_error_is_caught(self, _):
         # Создадим completed payment, чтобы пройти до send_mail и инициировать исключение
         from decimal import Decimal
-        from django.utils import timezone
-        from Payments.models import Payment
+
         from django.contrib.auth import get_user_model
+        from django.utils import timezone
+
         from Disciplines.models import Discipline
+        from Payments.models import Payment
 
         User = get_user_model()
         u = User.objects.create_user(email="mail_err@a.aa", password="pw")
@@ -64,5 +66,6 @@ class CeleryTasksGenerateEmailExceptionsTests(TestCase):
         out = ct._send_payment_success_notification_impl(p.id)
         # Должен вернуться валидный ответ (notification_sent), несмотря на ошибку отправки
         self.assertIsInstance(out, dict)
-        self.assertIn(out.get("status"), {"notification_sent", "not_ready", "not_found"})
-
+        self.assertIn(
+            out.get("status"), {"notification_sent", "not_ready", "not_found"}
+        )

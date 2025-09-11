@@ -26,7 +26,9 @@ class PaymentsViewsAdminKeyRegenerateTests(TestCase):
 
     def test_regenerate_returns_400_when_no_email(self):
         # Ключ без пользователя и email
-        ak = AdminKey.objects.create(user=None, key="no-email-key", email=None, is_active=True)
+        ak = AdminKey.objects.create(
+            user=None, key="no-email-key", email=None, is_active=True
+        )
 
         mod = import_module("Admin.views")
         view = mod.AdminKeyViewSet()

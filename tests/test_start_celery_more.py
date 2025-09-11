@@ -1,5 +1,5 @@
 import io
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from django.test import TestCase
 
@@ -23,9 +23,9 @@ class StartCeleryMoreTests(TestCase):
         worker_mock.wait.side_effect = KeyboardInterrupt()
         beat_mock.wait.return_value = None
         # Popen side_effect возвращает сначала worker, затем beat
-        with patch("subprocess.Popen", side_effect=[worker_mock, beat_mock]) as popen_patch, patch(
-            "builtins.input", return_value="1"
-        ):
+        with patch(
+            "subprocess.Popen", side_effect=[worker_mock, beat_mock]
+        ) as popen_patch, patch("builtins.input", return_value="1"):
             # не должен прерывать тест
             start_celery.start_celery()
 
@@ -37,7 +37,9 @@ class StartCeleryMoreTests(TestCase):
     def test_choice_2_runs_worker_via_subprocess_run(self):
         """Выбор 2: запустит worker через subprocess.run (без реального запуска)."""
         mock_run = MagicMock(return_value=MagicMock())
-        with patch("subprocess.run", mock_run), patch("builtins.input", return_value="2"):
+        with patch("subprocess.run", mock_run), patch(
+            "builtins.input", return_value="2"
+        ):
             start_celery.start_celery()
 
         # Должен быть вызов subprocess.run (внутри run must be called at least once)
@@ -50,7 +52,9 @@ class StartCeleryMoreTests(TestCase):
     def test_choice_3_runs_beat_via_subprocess_run(self):
         """Выбор 3: запустит только beat через subprocess.run."""
         mock_run = MagicMock(return_value=MagicMock())
-        with patch("subprocess.run", mock_run), patch("builtins.input", return_value="3"):
+        with patch("subprocess.run", mock_run), patch(
+            "builtins.input", return_value="3"
+        ):
             start_celery.start_celery()
 
         self.assertTrue(mock_run.called)
@@ -60,7 +64,9 @@ class StartCeleryMoreTests(TestCase):
 
     def test_invalid_choice_prints_message(self):
         """Неверный выбор — печатает сообщение и выходит из функции без исключений."""
-        with patch("builtins.input", return_value="invalid"), patch("sys.stdout", new=io.StringIO()) as fake_out:
+        with patch("builtins.input", return_value="invalid"), patch(
+            "sys.stdout", new=io.StringIO()
+        ) as fake_out:
             start_celery.start_celery()
             out = fake_out.getvalue()
             self.assertIn("Неверный выбор", out)
