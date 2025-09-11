@@ -115,7 +115,7 @@ class Command(BaseCommand):
         # выполняем итерацию
         start = 0
         while True:
-            objs = list(qs[start: start + batch])
+            objs = list(qs[start : start + batch])
             if not objs:
                 break
 

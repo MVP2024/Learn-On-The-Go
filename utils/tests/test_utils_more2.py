@@ -86,7 +86,9 @@ class CeleryTasksNotFoundTests(TestCase):
             text = str(retval).lower() if retval is not None else ""
             # Accept English or Russian variants
             self.assertTrue(
-                ("not found" in text) or ("не найден" in text) or ("не найдено" in text),
+                ("not found" in text)
+                or ("не найден" in text)
+                or ("не найдено" in text),
                 msg=f"Ожидался маркер 'not found' или 'не найден' в ответе, получили: {text}",
             )
 
@@ -98,7 +100,9 @@ class CeleryTasksNotFoundTests(TestCase):
         else:
             text = str(retval).lower() if retval is not None else ""
             self.assertTrue(
-                ("not found" in text) or ("не найден" in text) or ("не найдено" in text),
+                ("not found" in text)
+                or ("не найден" in text)
+                or ("не найдено" in text),
                 msg=f"Ожидался маркер 'not found' или 'не найден' в ответе, получили: {text}",
             )
 

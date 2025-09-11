@@ -84,7 +84,16 @@ class CeleryTasksYooKassaBranchesTests(TestCase):
                 text2 = str(retval2).lower() if retval2 is not None else ""
                 # accept english or russian words indicating canceled/failed
                 self.assertTrue(
-                    any(k in text2 for k in ("canceled", "cancellation", "failed", "отмен", "неудач")),
+                    any(
+                        k in text2
+                        for k in (
+                            "canceled",
+                            "cancellation",
+                            "failed",
+                            "отмен",
+                            "неудач",
+                        )
+                    ),
                     msg=f"Ожидался маркер отмены/failed в ответе, получили: {text2}",
                 )
             p2.refresh_from_db()
@@ -115,4 +124,7 @@ class CeleryTasksYooKassaBranchesTests(TestCase):
                 self.assertEqual(retval3.get("status"), "pending")
             else:
                 text3 = str(retval3).lower() if retval3 is not None else ""
-                self.assertTrue(any(k in text3 for k in ("pending", "в процессе", "ожида")), msg=f"Ожидался маркер pending в ответе, получили: {text3}")
+                self.assertTrue(
+                    any(k in text3 for k in ("pending", "в процессе", "ожида")),
+                    msg=f"Ожидался маркер pending в ответе, получили: {text3}",
+                )

@@ -18,7 +18,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True if os.getenv("DEBUG") == "True" else False
 
-ALLOWED_HOSTS = []
+# Разрешить настройку ALLOWED_HOSTS с помощью переменной окружения (через запятую)
+# Пример: ALLOWED_HOSTS=158.160.22.96,localhost
+_env_allowed = [
+    h.strip() for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()
+]
+# Если список пуст и DEBUG имеет значение True, разрешить все для упрощения разработки;
+# в противном случае оставить список пустым
+ALLOWED_HOSTS = _env_allowed if _env_allowed else (["*"] if DEBUG else [])
 
 INSTALLED_APPS = [
     "django.contrib.admin",

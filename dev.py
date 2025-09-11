@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Кроссплатформенный помощник разработчика для изучения платформы.
 Позволяет запускать общие команды из Windows (make не установлен), macOS и Linux.
@@ -9,6 +8,7 @@ python dev.py перенос
 
 Это отражает цели из Makefile, но не требует GNU make.
 """
+
 import argparse
 import shutil
 import subprocess
@@ -21,7 +21,15 @@ CMDS = {
     "logs": ["docker", "compose", "logs", "-f", "web"],
     "shell": ["docker", "compose", "exec", "web", "sh"],
     "migrate": ["docker", "compose", "exec", "web", "python", "manage.py", "migrate"],
-    "fixtures": ["docker", "compose", "exec", "web", "python", "utils/clear_and_load_fixtures.py", "--yes"],
+    "fixtures": [
+        "docker",
+        "compose",
+        "exec",
+        "web",
+        "python",
+        "utils/clear_and_load_fixtures.py",
+        "--yes",
+    ],
     # запускайте тесты в одноразовом контейнере, явно указав DJANGO_SETTINGS_MODULE
     "test-docker-run": [
         "docker",
@@ -47,7 +55,10 @@ CMDS = {
 
 def check_docker_available():
     if shutil.which("docker") is None:
-        print("Error: 'docker' CLI not found in PATH. Please install Docker Desktop or the docker CLI.")
+        print(
+            "Ошибка: интерфейс командной строки docker не найден в PATH. "
+            "Пожалуйста, установите Docker Desktop или интерфейс командной строки docker."
+        )
         return False
     return True
 
@@ -57,11 +68,11 @@ def run(cmd, check=True):
     try:
         subprocess.run(cmd, check=check)
     except subprocess.CalledProcessError as e:
-        print(f"Command failed with exit code {e.returncode}")
+        print(f"Ошибка выполнения команды с кодом завершения {e.returncode}")
         if check:
             sys.exit(e.returncode)
     except FileNotFoundError:
-        print(f"Command not found: {cmd[0]}")
+        print(f"Команда не найдена: {cmd[0]}")
         sys.exit(2)
 
 
@@ -69,37 +80,45 @@ def run_test_docker():
     # Запускаем db и redis (только их), а затем можем выполнить команду pytest в веб-интерфейсе с тестовыми настройками
     if not check_docker_available():
         sys.exit(1)
-    run(["docker", "compose", "up", "-d", "--build", "db", "redis"])    
+    run(["docker", "compose", "up", "-d", "--build", "db", "redis"])
     # запускаем pytest внутри веб-контейнера с помощью DJANGO_SETTINGS_MODULE переопределяя
-    run([
-        "docker",
-        "compose",
-        "exec",
-        "-e",
-        "DJANGO_SETTINGS_MODULE=config.test_settings",
-        "web",
-        "python",
-        "-m",
-        "pytest",
-        "-q",
-        "-o",
-        "addopts=",
-    ])
+    run(
+        [
+            "docker",
+            "compose",
+            "exec",
+            "-e",
+            "DJANGO_SETTINGS_MODULE=config.test_settings",
+            "web",
+            "python",
+            "-m",
+            "pytest",
+            "-q",
+            "-o",
+            "addopts=",
+        ]
+    )
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Dev helper for LearningPlatform")
-    parser.add_argument("target", nargs="?", default="help", help="Which target to run")
+    parser = argparse.ArgumentParser(
+        description="Помощник разработчика для изучения платформы"
+    )
+    parser.add_argument(
+        "target", nargs="?", default="help", help="Какую цель запустить"
+    )
     args = parser.parse_args()
     t = args.target
     if t == "help":
-        print("Available targets:")
+        print("Доступные цели:")
         for k in sorted(list(CMDS.keys()) + ["help"]):
             print(" - ", k)
         sys.exit(0)
 
     if t not in CMDS:
-        print(f"Unknown target: {t}\nRun: python dev.py (no args) to see available targets")
+        print(
+            f"Неизвестная цель: {t}\nRun: python dev.py (без аргументов) для просмотра доступных целей"
+        )
         sys.exit(1)
 
     if t == "test-docker":

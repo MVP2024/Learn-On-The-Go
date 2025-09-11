@@ -2,17 +2,15 @@
 set -euo pipefail
 
 # Простая точка входа, используемая сервисами docker-compose для:
-# - установки зависимостей Python
+# - установки зависимостей Python (в dev; в prod можно отключить через SKIP_REQUIREMENTS=1)
 # - ожидания доступа к TCP-порту базы данных
-# - запуска выбранного сервиса (web / celery / celery-beat / flower)
+# - запуска выбранного сервиса (web / gunicorn / celery / celery-beat / flower)
 
-# Установить зависимости (быстро для разработчиков; используйте встроенный образ для prod)
-# Установить зависимости (быстро для разработчиков; используйте встроенный образ для prod)
-if [ -f "/code/requirements.txt" ]; then
+# Установка зависимостей (быстро для разработчиков; используйте заранее собранный образ для prod)
+if [ "${SKIP_REQUIREMENTS:-0}" != "1" ] && [ -f "/code/requirements.txt" ]; then
     echo "Installing Python dependencies..."
     pip install --no-cache-dir -r /code/requirements.txt
 fi
-
 
 # Ждём, пока БД примет TCP-соединения
 DB_HOST=${DB_HOST:-db}
@@ -48,6 +46,21 @@ case "$SERVICE" in
     python /code/manage.py migrate --noinput || true
     exec python /code/manage.py runserver 0.0.0.0:8000
     ;;
+  gunicorn)
+    echo "Running Django with gunicorn"
+    python /code/manage.py migrate --noinput
+    # Сбор статических файлов для nginx
+    python /code/manage.py collectstatic --noinput
+    # Параметры Gunicorn можно переопределять через переменные окружения
+    WORKERS=${GUNICORN_WORKERS:-3}
+    TIMEOUT=${GUNICORN_TIMEOUT:-120}
+    BIND=${GUNICORN_BIND:-0.0.0.0:8000}
+    exec gunicorn config.wsgi:application \
+         --workers "${WORKERS}" \
+         --bind "${BIND}" \
+         --timeout "${TIMEOUT}" \
+         --access-logfile - --error-logfile -
+    ;;
   celery)
     echo "Starting Celery worker"
     exec celery -A config worker --loglevel=info --concurrency=2
@@ -61,7 +74,7 @@ case "$SERVICE" in
     exec celery -A config flower --port=5555
     ;;
   *)
-    echo "Executing passed command: $SERVICE $@"
+    echo "Executing passed command:" "$SERVICE" "$@"
     exec "$SERVICE" "$@"
     ;;
 esac

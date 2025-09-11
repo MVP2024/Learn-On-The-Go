@@ -137,12 +137,11 @@ python manage.py runserver
 - utils/ — вспомогательные утилиты, tasks, скрипты для загрузки фикстур
 - fixtures/ — initial_data.json (demo-данные)
 
----
-
 ## 6. Документы и подробные руководства
 - API тестирование: API_TESTING_GUIDE.md
 - Celery: CELERY_GUIDE.md
 - Платежи: PAYMENTS_SUMMARY.md, Payments/QUICK_START.md, Payments/YOOKASSA_SETUP.md, Payments/STRIPE_SETUP.md, Payments/PAYMENT_SYSTEMS.md
+- Развёртывание и CI/CD: DEPLOYMENT.md
 
 ---
 
@@ -169,6 +168,7 @@ README должен быть "входной картой". Ниже — про�
   - Если планируете работать с фоновой обработкой задач: далее — CELERY_GUIDE.md (запуск Celery, Flower, конфигурация)
   - Если нужно проверить платежи/симуляцию транзакций: далее — Payments/QUICK_START.md
   - Если нужно тестировать API вручную: далее — API_TESTING_GUIDE.md
+  - Если нужен прод/CI/CD — откройте DEPLOYMENT.md
 
 - Локальная разработка без Docker: после раздела 2 README — посмотрите:
   - CELERY_GUIDE.md — если используются фоновые задачи
@@ -177,17 +177,68 @@ README должен быть "входной картой". Ниже — про�
 - Полезные детали и отладка:
   - Для загрузки/очистки demo-данных: utils/clear_and_load_fixtures.py (см. раздел 4)
   - Для быстрого создания пользователей/цен: utils/scripts_for_demo/*
+## 9. Коротко про CI/CD и проверки
+- GitHub Actions (.github/workflows/ci-cd.yml) запускается на пуши в ветки main/master/develop и в feature/*, bugfix/*, hotfix/*; а также на PR в develop и main/master.
+- Джобы:
+  - Lint & Test: black/isort/flake8 + pytest с тестовыми настройками (DJANGO_SETTINGS_MODULE=config.test_settings). Если тесты/линтеры падают — деплой не запустится.
+  - Build Docker images: пробная сборка образов web и nginx.
+  - Deploy: выполняется только при пуше в main. Заходит на сервер по SSH и запускает docker compose с прод-овэррайдом.
+- Секреты, необходимые для деплоя: SSH_HOST, SSH_USER, SSH_KEY, DEPLOY_PATH. Опционально: SSH_PORT (если не 22). Подробности — [.github/README_CICD_SECRETS.md](.github/README_CICD_SECRETS.md) и [DEPLOYMENT.md](DEPLOYMENT.md).
 
-Пример записи в README рядом с Quick Start (коротко):
+Проверки локально (как повторить CI):
+- Линтеры:
+  - black --check .
+  - isort --check-only .
+  - flake8 .
+- Тесты (варианты):
+  - Без Docker (использует in‑memory SQLite):
+    - Linux/macOS: DJANGO_SETTINGS_MODULE=config.test_settings pytest -q -o addopts=''
+    - Windows PowerShell: $env:DJANGO_SETTINGS_MODULE="config.test_settings"; pytest -q -o addopts=''
+  - Через Docker (разовый контейнер):
+    docker compose run --rm -e DJANGO_SETTINGS_MODULE=config.test_settings web python -m pytest -q -o addopts=''
+  - Через Docker (поднять db/redis и гонять тесты в running web):
+    make test-docker  # или python dev.py test-docker
+- Покрытие (pytest-cov):
+  - Локально: DJANGO_SETTINGS_MODULE=config.test_settings pytest --cov=. --cov-report=term-missing -q -o addopts=''
+  - В Docker (разовый): docker compose run --rm -e DJANGO_SETTINGS_MODULE=config.test_settings web python -m pytest --cov=. --cov-report=term-missing -q -o addopts=''
 
-"Дальше: если вы разворачиваете проект через Docker и планируете использовать Celery — перейдите в CELERY_GUIDE.md; если нужна проверка платёжной логики — откройте Payments/QUICK_START.md."
+Swagger и документация API
+- Swagger UI доступен по адресу:
+  - Локально: http://localhost:8000/api/schema/swagger-ui/
+  - На сервере: http://<SERVER_IP>/api/schema/swagger-ui/
+- Redoc: http://<host>/api/schema/redoc/
+
+Фикстуры / начальные данные
+- Безопасный загрузчик: utils/clear_and_load_fixtures.py (подтверждение, проверки, обход проблем с auth.permission).
+- Быстрый старт (в Docker):
+  docker compose exec web python utils/clear_and_load_fixtures.py --yes
+- В проде используйте аккуратно. Скрипт умеет блокироваться при DEBUG=False (см. флаги в скрипте).
+
+Для преподавателя (проверка ДЗ)
+- Достаточно оформить PR из своей ветки в develop. В пайплайне выполняются линтеры/тесты/сборка — их статус виден в PR.
+- Деплой не обязателен. Если нужен демонстрационный деплой — мёрдж в main запустит джоб Deploy (при наличии секретов в репозитории).
 
 ---
 
-Пошаговая «1 → 2 → 3» последовательность (от клона до работы и тестирования)
+## 10. Пошаговая «1 → 2 → 3» последовательность (от клона до работы и тестирования)
 
 1) Клонирование и запуск (Quick Start — Docker)
-   - Склонируйте репозиторий и перейдите в папку проекта (см. команда выше).
+   - Склонируйте репозиторий и перейдите в папку проекта.
+   - Создайте .env из .env.example и заполните переменные. Для локали:
+     - BASE_URL=http://127.0.0.1:8000
+     - ALLOWED_HOSTS=127.0.0.1,localhost
+   - Запустите: docker-compose up -d --build
+   - Миграции и фикстуры: docker-compose exec web python manage.py migrate && docker-compose exec web python utils/clear_and_load_fixtures.py --yes
+
+2) Полезные сервисы и отладка
+   - Celery/Redis — см. CELERY_GUIDE.md
+   - Swagger UI — http://localhost:8000/api/schema/swagger-ui/
+
+3) Тесты/линтеры локально
+   - См. раздел выше «Коротко про CI/CD и проверки».
+
+← [Назад: «Документация проекта»](README.md) | **Далее:** [CELERY_GUIDE.md](CELERY_GUIDE.md) → | [Все руководства](README.md)
+
    - Создайте .env из .env.example и заполните значения.
    - Запустите: docker-compose up -d --build
    - Запустите миграции и (опционально) загрузите фикстуры: docker-compose exec web python manage.py migrate && docker-compose exec web python utils/clear_and_load_fixtures.py --yes
@@ -202,12 +253,12 @@ README должен быть "входной картой". Ниже — про�
    - Скрипты для разработки: utils/scripts_for_demo/* (создать пользователей/цен/демо‑платежи).
    - Тесты: запустите pytest (локально или в контейнере через Makefile/dev.py). См. pytest.ini и config/test_settings.py.
 
-Эта последовательность — минимальный путь от A до Z: клонирование → окружение и сервисы → тестирование и отладка. 
+Эта последовательность — минимальный путь от A до Z: клонирование → окружение и сервисы → тестирование и отладка.
 Если нужно, могу превратить её в отдельный GETTING_STARTED.md с чек‑листом и командой копирования/вставки(Сообщите в ЛК.)
 
 ---
 
-Краткий чек‑лист (Copy & Paste для быстрого запуска)
+## Краткий чек‑лист (Copy & Paste для быстрого запуска)
 
 # Docker (рекомендуется)
 cp .env.example .env && docker-compose up -d --build && docker-compose exec web python manage.py migrate && docker-compose exec web python utils/clear_and_load_fixtures.py --yes
@@ -222,4 +273,3 @@ python utils/clear_and_load_fixtures.py --yes
 ---
 
 ← [Назад: «Документация проекта»](README.md) | **Далее:** [CELERY_GUIDE.md](CELERY_GUIDE.md) → | [Все руководства](README.md)
-
