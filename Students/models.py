@@ -1,5 +1,7 @@
 from django.db import models
+
 from Users.models import User
+
 
 class Student(models.Model):
     COURSE_CHOICES = [(i, f"{i} курс") for i in range(1, 7)]

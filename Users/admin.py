@@ -16,7 +16,6 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
 
-    # "UserAdmin.list_display +" добавить после "="
     list_display = (
         "email",
         "first_name",

@@ -1,79 +1,69 @@
-# 🚀 Быстрый старт с ЮKassa
+# Быстрый старт — Платежи (YooKassa)
 
-## Что нужно для работы платежей
+Коротко: как быстро настроить и протестировать платежи через YooKassa в локальной разработке.
 
-### 1. Регистрация в ЮKassa (5 минут)
+1. Зарегистрируйтесь и создайте тестовый магазин в YooKassa
+- Документация: https://yookassa.ru/developers/
+- Получите shopId и secret key для тестового режима.
 
-1. Идите на https://yookassa.ru/developers/
-2. Нажмите "Подключить ЮKassa"
-3. Заполните форму регистрации
-4. Подтвердите email
+2. Настройте переменные окружения
+- Скопируйте корневой .env.example в .env и заполните данные для YooKassa:
 
-### 2. Создание тестового магазина
-
-1. В личном кабинете нажмите "Добавить магазин"
-2. Выберите "Тестовый магазин"
-3. Заполните данные:
-   - Название: "LearningPlatform Test"
-   - Тип: "Образование"
-   - Сайт: ваш домен или localhost
-
-### 3. Получение ключей
-
-В разделе "Настройки" → "Интеграция":
-- **shopId** (ID магазина) - скопируйте
-- **Секретный ключ** - создайте и скопируйте
-
-### 4. Настройка проекта
-
-В файле `.env` замените:
 ```env
-YOOKASSA_SHOP_ID=ваш_реальный_shop_id
-YOOKASSA_SECRET_KEY=ваш_реальный_secret_key  
+YOOKASSA_SHOP_ID=ваш_shop_id
+YOOKASSA_SECRET_KEY=ваш_secret_key
 YOOKASSA_TEST_MODE=True
+BASE_URL=http://localhost:8000
 ```
 
-### 5. Применение миграций
+Не храните реальные секреты в репозитории.
+
+3. Примените миграции и загрузите demo-данные (опционально)
 
 ```bash
-python manage.py makemigrations
 python manage.py migrate
+python utils/clear_and_load_fixtures.py --yes
+# или только пользователи:
+python utils/scripts_for_demo/setup_users.py
 ```
 
-### 6. Тестирование
+4. Запустите сервисы
+- Запуск локально: python manage.py runserver
+- Запуск Redis (брокер) — можно через Docker:
 
 ```bash
-python Payments/test_yookassa.py
+docker run -d --name lp-redis -p 6379:6379 redis:alpine
 ```
 
-## 🎯 Тестовые данные
+- Запустите Celery (dev): python start_celery.py
 
-**Тестовые карты:**
-- ✅ Успешная оплата: `5555555555554444`
-- ❌ Отклонение: `4000000000000002`
-- Дата: `12/26`, CVC: `123`
-
-## 🔧 Настройка Webhook (опционально для тестирования)
-
-1. Установите ngrok: `npm install -g ngrok`
-2. Запустите туннель: `ngrok http 8000`
-3. Скопируйте URL типа: `https://abc123.ngrok.io`
-4. В ЮKassa → HTTP-уведомления → добавьте:
-   `https://abc123.ngrok.io/api/payments/yookassa-webhook/`
-
-## 🎉 Готово!
-
-Теперь можно создавать платежи через API:
+5. Тестирование платежа
+- В скриптах есть utils/scripts_for_demo/yookassa_demo.py для быстрой проверки подключения и создания тестового платежа.
+- Пример запуска:
 
 ```bash
-curl -X POST http://localhost:8000/api/payments/create_payment/ \
-  -H "Authorization: Bearer ваш_токен" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "payment_type": "discipline",
-    "discipline_id": 1,
-    "payment_method": "yookassa"
-  }'
+python utils/scripts_for_demo/yookassa_demo.py
 ```
 
-**Ответ будет содержать `yookassa_confirmation_url` для перенаправления на оплату!**
+- Скрипт выведет confirmation_url — откройте его в браузере, используйте тестовую карту.
+- Тестовая карта (пример): 5555555555554444, срок/сvv — 12/26, 123.
+
+6. Webhook (локально)
+- WooKassa требует публичный HTTPS URL для webhook.
+- Для локали используйте ngrok/Cloudflare Tunnel и настройте webhook в личном кабинете YooKassa на:
+
+```
+https://<ваш-tunnel>.ngrok.io/api/payments/yookassa-webhook/
+```
+
+7. В продакшне
+- Webhook должен быть HTTPS и проверяться на подпись.
+- Храните ключи в секретном хранилище CI/hosting.
+- Для продакшна отключите тестовый режим (YOOKASSA_TEST_MODE=False) и проверьте права доступа.
+
+Если нужно, подготовлю curl-примеры для создания платежа и обработки webhook или интеграцию с фронтендом.
+(Сообщите мне в репозитории)
+
+---
+
+← [← В PAYMENTS_SUMMARY](../PAYMENTS_SUMMARY.md) | [← В README](../README.md) | **Далее:** [YOOKASSA_SETUP.md](YOOKASSA_SETUP.md) → | [Все руководства](../README.md#6-документы-и-подробные-руководства)

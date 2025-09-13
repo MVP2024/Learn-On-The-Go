@@ -1,10 +1,14 @@
-from pathlib import Path
 import os
 from datetime import timedelta
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 # загрузка переменных окружения из файла .env
 load_dotenv()
+
+# импорт расписания celery
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,7 +18,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True if os.getenv("DEBUG") == "True" else False
 
-ALLOWED_HOSTS = []
+# Разрешить настройку ALLOWED_HOSTS с помощью переменной окружения (через запятую)
+# Пример: ALLOWED_HOSTS=158.160.22.96,localhost
+_env_allowed = [
+    h.strip() for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()
+]
+# Если список пуст и DEBUG имеет значение True, разрешить все для упрощения разработки;
+# в противном случае оставить список пустым
+ALLOWED_HOSTS = _env_allowed if _env_allowed else (["*"] if DEBUG else [])
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -23,6 +34,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Postgres-specific features (indexes, trigram, etc.)
+    "django.contrib.postgres",
     "django_filters",
     "rest_framework",
     "rest_framework_simplejwt",
@@ -33,7 +46,7 @@ INSTALLED_APPS = [
     "Teachers",
     "Admin",
     "Students",
-    "Tests",
+    "Exercises",
     "Payments",
     "utils",
     "celery",
@@ -53,7 +66,6 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
-        # "rest_framework.permissions.AllowAny", # Разрешить всем
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -67,14 +79,13 @@ REST_FRAMEWORK = {
 
 # настройки для JWT
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=180),  # Время жизни access токена
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),  # Время жизни refresh токена
-    "ROTATE_REFRESH_TOKENS": True,  # Автоматически обновлять refresh токен
-    "BLACKLIST_AFTER_ROTATION": True,  # Черный список старых refresh токенов
-    "UPDATE_LAST_LOGIN": True,  # Обновлять last_login при использовании токена
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=180),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
-    # Используйте SECRET_KEY из env или дефолтное значение
     "VERIFYING_KEY": None,
     "AUDIENCE": None,
     "ISSUER": None,
@@ -104,19 +115,17 @@ SPECTACULAR_SETTINGS = {
         "DEFAULT_MODEL_RENDERING": "example",
         "DEEP_LINKING": True,
     },
-    "SERVE_INCLUDE_SCHEMA": False,  # Не включать схему в UI, если она уже доступна отдельно
-    "SCHEMA_PATH_PREFIX": r"/api/",  # Префикс для всех путей в схеме
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SCHEMA_PATH_PREFIX": r"/api/",
     "AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.BasicAuthentication",
     ],
     "PERMISSIONS_CLASSES": [
-        "rest_framework.permissions.AllowAny",  # Разрешаем доступ к Swagger UI без аутентификации
+        "rest_framework.permissions.AllowAny",
     ],
-    "TAGS": [
-        {"name": "Информация. Читай и тыкай правильно."},
-    ],
+    "TAGS": [{"name": "Информация. Читай и тыкай правильно."}],
 }
 
 ROOT_URLCONF = "config.urls"
@@ -141,50 +150,40 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT"),
+        "NAME": os.getenv("DB_NAME", "postgres"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
+        "HOST": os.environ.get("DB_HOST", "db"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 LANGUAGE_CODE = "ru-ru"
-
 TIME_ZONE = "Europe/Moscow"
-
 USE_I18N = True
-
 USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# Media files
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # Папка, куда будут загружаться файлы
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Настройки кэширования с Redis
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+# Redis cache settings
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
-REDIS_DB = os.getenv("REDIS_DB", "1")  # Номер базы данных Redis
+REDIS_DB = os.getenv("REDIS_DB", "1")
 
 CACHES = {
     "default": {
@@ -201,18 +200,11 @@ CACHES = {
     }
 }
 
-# Используем Redis для кеширования сессий
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
-# Настройки для загрузки фикстур
-FIXTURE_DIRS = [
-    os.path.join(BASE_DIR, "fixtures"),
-]
+FIXTURE_DIRS = [os.path.join(BASE_DIR, "fixtures")]
 
-# Email settings
-# Настройки Email для тестирования и отладки, если что можно закомимтить, когда настроишь в .env
-# для вывода писем в консоль вместо реальной отправки
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
@@ -232,92 +224,53 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = "noreply@example.com"
 
 AUTH_USER_MODEL = "Users.User"
-
 LOGIN_URL = "/users/login/"
-# Конфигурация Celery
+
+# Celery configuration
 CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
-CELERY_RESULT_BACKEND = (
-    "django-db"  # Используем Django ORM для хранения результатов задач
-)
+CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_OPTIMIZE_DIRECT = False
 CELERY_WORKER_OPTIMIZATIONS = False
-CELERY_WORKER_POOL = 'solo'
-from celery.schedules import crontab
+CELERY_WORKER_POOL = "solo"
 
 CELERY_BEAT_SCHEDULE = {
-    # Очистка просроченных платежей каждые 6 часов
-    'cleanup-expired-payments': {
-        'task': 'utils.celery_tasks.cleanup_expired_payments',
-        'schedule': crontab(minute=0, hour='*/6'),
+    "cleanup-expired-payments": {
+        "task": "utils.celery_tasks.cleanup_expired_payments",
+        "schedule": crontab(minute=0, hour="*/6"),
     },
-
-    # Убираем истёкшие скидки каждый час
-    'cleanup-expired-discounts': {
-        'task': 'utils.celery_tasks.cleanup_expired_discounts',
-        'schedule': crontab(minute=0),
+    "cleanup-expired-discounts": {
+        "task": "utils.celery_tasks.cleanup_expired_discounts",
+        "schedule": crontab(minute=0),
     },
-
-    # Ежедневный отчёт в 9:00
-    'daily-reports': {
-        'task': 'utils.celery_tasks.generate_daily_reports',
-        'schedule': crontab(hour=9, minute=0),
+    "daily-reports": {
+        "task": "utils.celery_tasks.generate_daily_reports",
+        "schedule": crontab(hour=9, minute=0),
     },
-
-    # Обновление статистики пользователей каждую ночь в 2:00
-    'update-user-stats': {
-        'task': 'utils.celery_tasks.update_user_progress_stats',
-        'schedule': crontab(hour=2, minute=0),
+    "update-user-stats": {
+        "task": "utils.celery_tasks.update_user_progress_stats",
+        "schedule": crontab(hour=2, minute=0),
     },
-
-    # Напоминания о курсах каждый понедельник в 10:00
-    'send-course-reminders': {
-        'task': 'utils.celery_tasks.send_course_reminders',
-        'schedule': crontab(hour=10, minute=0, day_of_week=1),
+    "send-course-reminders": {
+        "task": "utils.celery_tasks.send_course_reminders",
+        "schedule": crontab(hour=10, minute=0, day_of_week=1),
+    },
+    "cleanup-expired-admin-keys": {
+        "task": "utils.celery_tasks.cleanup_expired_admin_keys",
+        "schedule": crontab(minute="*/15"),
     },
 }
 
-# Настройки Stripe (намного проще!)
+# Stripe / YooKassa настройки и другие параметры остаются неизменными
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 STRIPE_TEST_MODE = os.getenv("STRIPE_TEST_MODE", "True") == "True"
-
-# URL для обработки webhook от Stripe
 STRIPE_WEBHOOK_URL = f"{BASE_URL}/api/payments/stripe-webhook/"
 
-# Настройки ЮKassa
 YOOKASSA_SHOP_ID = os.getenv("YOOKASSA_SHOP_ID", "")
 YOOKASSA_SECRET_KEY = os.getenv("YOOKASSA_SECRET_KEY", "")
 YOOKASSA_TEST_MODE = os.getenv("YOOKASSA_TEST_MODE", "True") == "True"
-
-# URL для обработки webhook от ЮKassa
 YOOKASSA_WEBHOOK_URL = f"{BASE_URL}/api/payments/yookassa-webhook/"
-# для логгирования ошибок.
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "handlers": {
-#         "console": {
-#             "class": "logging.StreamHandler",
-#         },
-#     },
-#     "root": {
-#         "handlers": ["console"],
-#         "level": "DEBUG",
-#     },
-#     "loggers": {
-#         "django": {
-#             "handlers": ["console"],
-#             "level": "DEBUG",
-#             "propagate": False,
-#         },
-#         "django.db.backends": {
-#             "handlers": ["console"],
-#             "level": "DEBUG",
-#             "propagate": False,
-#         },
-#     },
-# }

@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from Disciplines.models import Discipline, Section
 
 
@@ -10,7 +11,7 @@ class SectionInline(admin.TabularInline):
 
 @admin.register(Discipline)
 class DisciplineAdmin(admin.ModelAdmin):
-    list_display = ('title', 'owner', 'preview', 'order')
-    search_fields = ('title', 'description', 'owner__email')
-    list_filter = ('owner',)
+    list_display = ("title", "owner", "preview", "order")
+    search_fields = ("title", "description", "owner__email")
+    list_filter = ("owner",)
     inlines = [SectionInline]

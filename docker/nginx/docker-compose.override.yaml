@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: ..
+      dockerfile: nginx/Dockerfile
+    volumes:
+      - ..:/code:cached
+      - ../staticfiles:/code/staticfiles:ro
+      - ../media:/code/media:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    restart: unless-stopped

@@ -1,4 +1,7 @@
 [flake8]
-ignore = E501, W503,  F401
+ignore = E501, W503, F401, E402, F541, E203
 max-line-length = 120
-exclude = .git,__pycache__,docs,old,build,dist,.venv,env
+exclude = .git,pycache,docs,old,build,dist,.venv,env,.env
+per-file-ignores =
+    Payments/views.py: F401
+    config/test_settings.py: F403, F405

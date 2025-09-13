@@ -1,174 +1,275 @@
 # LearningPlatform
 
-**LearningPlatform** - это образовательная платформа, разработанная на Django Rest Framework, позволяющая пользователям проходить курсы, уроки и тесты, а преподавателям и администраторам управлять контентом.
+LearningPlatform — образовательная платформа на Django + DRF. Позволяет создавать и проходить дисциплины, уроки и тесты; управлять пользователями, ролями, ценами и оплатой (YooKassa / Stripe). Проект ориентирован на локальную разработку и развёртывание через Docker Compose.
 
-## 🚀 Быстрый старт
+Цель этого README — показать быстрый, воспроизводимый путь "от клона репозитория до работающего окружения" и дать ссылки на дополнительные руководства.
 
-Для запуска проекта выполните следующие шаги:
+Содержание
+- Быстрый старт (локально и через Docker)
+- Настройка .env и безопасность
+- Команды для миграций, фикстур и тестов
+- Краткое описание структуры репозитория
+- Куда смотреть дальше (доп. доки)
 
-### 📦 1. Установка зависимостей
+---
 
-Убедитесь, что у вас установлен Python 3.9+ и pip. Затем установите зависимости:
+## 1. Быстрый старт — Docker (рекомендуется)
+1. Склонируйте репозиторий.
+
+Выбор команды зависит от оболочки. && работает в Bash, Git Bash, WSL и в большинстве современных шеллов; для максимальной совместимости приведены варианты для разных сред.
+
+Unix / macOS / Git Bash / WSL (однострочно):
 
 ```bash
+git clone <repo-url> && cd LearningPlatform
+```
+
+Windows (cmd.exe) — безопасно для всех версий Windows:
+
+```cmd
+git clone <repo-url>
+cd LearningPlatform
+```
+
+PowerShell (если && не поддерживается):
+
+```powershell
+git clone <repo-url>; Set-Location LearningPlatform
+# или
+git clone <repo-url>; cd LearningPlatform
+```
+
+Если хотите оставить одну строку в README — используйте Bash-версию и рядом укажите примечание о Windows.
+
+2. Скопируйте пример переменных окружения и отредактируйте `.env` (см. раздел ниже):
+
+```bash
+cp .env.example .env
+# Windows (cmd): copy .env.example .env
+```
+
+3. Запуск через docker-compose:
+
+```bash
+docker-compose up -d --build
+```
+
+4. Примените миграции и загрузите demo-данные (в контейнере web):
+
+```bash
+docker-compose exec web python manage.py migrate
+# опционально: загрузить fixtures (внимание: очищает данные)
+docker-compose exec web python utils/clear_and_load_fixtures.py --yes
+```
+
+5. Создать суперпользователя (если нужно):
+
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+Доступы по умолчанию (после загрузки фикстур): admin@a.aa / Spirocheta77 и др.; см. fixtures/initial_data.json
+
+Порты:
+- Django: http://localhost:8000/
+- Swagger API: http://localhost:8000/api/schema/swagger-ui/
+- Flower (если включён): http://localhost:5555/
+
+---
+
+## 2. Быстрый старт — локально (без Docker)
+1. Создайте виртуальное окружение и установите зависимости:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # или .venv\Scripts\activate на Windows
 pip install -r requirements.txt
 ```
 
-### ⚙️ 2. Настройка окружения
-
-Создайте файл `.env` в корневой директории проекта на основе `.env.example` и заполните его необходимыми данными (настройки базы данных, ключи API, режим отладки и т.д.):
-
-```dotenv
-SECRET_KEY=ваш_секретный_ключ
-
-# настройки БД (POSTGRESQL)
-DB_NAME=your_db_name
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=localhost
-DB_PORT=5432
-
-BASE_URL=http://localhost:8000
-
-# Настройки redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_DB=1
-
-DEBUG=True
-
-# Для отправки писем в консоль (для разработки)
-EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
-
-# Для реальной отправки писем (раскомментируйте и настройте)
-# EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-# EMAIL_HOST=smtp.example.com
-# EMAIL_PORT=587
-# EMAIL_USE_TLS=True
-# EMAIL_USE_SSL=False
-# EMAIL_HOST_USER=your_email@example.com
-# EMAIL_HOST_PASSWORD=your_email_password
-
-# Настройки Stripe (если используете)
-STRIPE_PUBLISHABLE_KEY=
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-STRIPE_TEST_MODE=True
-
-# Настройки ЮKassa (если используете)
-YOOKASSA_SHOP_ID=
-YOOKASSA_SECRET_KEY=
-YOOKASSA_TEST_MODE=True
-```
-
-### 💾 3. Подготовка базы данных
-
-Примените миграции для создания таблиц в базе данных:
+2. Создайте `.env` из `.env.example` и заполните значения.
+3. Примените миграции и запустите сервер:
 
 ```bash
 python manage.py migrate
-```
-
-### 📊 4. Загрузка тестовых данных (опционально)
-
-Для удобства тестирования вы можете загрузить преднастроенные тестовые данные (пользователи, дисциплины, уроки, тесты, платежи). Это очистит существующие данные в БД.
-
-```bash
-python utils/clear_and_load_fixtures.py
-```
-
-**Внимание:** Этот скрипт удалит все существующие данные из вашей базы данных перед загрузкой фикстур. Используйте его осторожно.
-
-### 👤 5. Создание суперпользователя (если не использовали скрипт выше)
-
-Если вы не использовали `utils/clear_and_load_fixtures.py`, создайте суперпользователя для доступа к Django Admin:
-
-```bash
-python manage.py createsuperuser
-```
-
-### 🚀 6. Запуск сервера и фоновых задач
-
-#### Django Development Server
-
-```bash
 python manage.py runserver
 ```
 
-Документация API будет доступна по адресу: [http://localhost:8000/api/schema/swagger-ui/](http://localhost:8000/api/schema/swagger-ui/)
+4. Запустите Redis/Celery отдельно, если используете фоновые задачи (см. CELERY_GUIDE.md).
 
-#### Redis (брокер сообщений для Celery)
+---
 
-Убедитесь, что Redis запущен. Если у вас его нет, установите: [https://redis.io/download](https://redis.io/download)
+## 3. Настройка `.env` и безопасность
+- В репозитории есть `.env.example` с placeholder-значениями — используйте его как шаблон.
+- Никогда не коммитьте реальный `.env` с секретами. `.gitignore` уже содержит `.env`.
+- Секреты (SECRET_KEY, Stripe/YooKassa ключи, пароли БД) должны храниться в CI/секретном хранилище и в локальном `.env` только для разработки.
+- `.coveragerc` должен быть в репозитории (унифицированный, без абсолютных путей). Локальные переопределения можно хранить в `.coveragerc.local` и добавить его в `.gitignore`.
 
-**Для Windows:**
+---
 
-```bash
-redis-server
-```
+## 4. Команды и полезные скрипты
+- Применение миграций:
+  - Локально: python manage.py migrate
+  - В Docker: docker-compose exec web python manage.py migrate
 
-**Для Linux/macOS:**
+- Загрузка demo-данных / очистка:
+  - `python utils/clear_and_load_fixtures.py --yes` — безопасный скрипт; по умолчанию запрещён в production (DEBUG=False) без ALLOW_FIXTURE_CLEAR=1.
 
-```bash
-sudo systemctl start redis  # (если установлен через пакетный менеджер)
-```
+- Создание пользователей/примеров цен/платежей:
+  - `python utils/scripts_for_demo/setup_users.py` — создаёт тестовых пользователей (admin, teacher, student, moderator) с паролем Spirocheta77
+  - `python utils/scripts_for_demo/setup_prices.py [setup|free|discount]` — настройка цен/скидок
+  - `python utils/scripts_for_demo/stripe_demo.py` / `yookassa_demo.py` — вспомогательные скрипты для тестирования платёжных интеграций
 
-#### Celery Worker и Beat
+- Celery (dev): `python start_celery.py` — удобный скрипт-обёртка (для отладки). Для продакшена используйте systemd/supervisor/containers (см. CELERY_GUIDE.md).
 
-Для асинхронной обработки задач (отправка email, обработка платежей, периодические задачи) используйте скрипт запуска Celery:
+- Тесты:
+  - `pytest` (в проекте настроен pytest-django)
+  - В тестах используется config.test_settings: in-memory SQLite и CELERY_ALWAYS_EAGER=True
 
-```bash
-python start_celery.py
-```
+---
 
-Этот скрипт предложит вам запустить Worker и Beat вместе или по отдельности.
+## 5. Краткая структура проекта
+- Admin/ — управление админ-ключами
+- Users/ — кастомная модель пользователя, регистрация, профиль
+- Disciplines/ — предметы (дисциплины), разделы
+- Lessons/ — уроки и прогресс студентов
+- Exercises/ — тесты/вопросы/прослушивания
+- Payments/ — логика платежей, интеграция с YooKassa и Stripe
+- utils/ — вспомогательные утилиты, tasks, скрипты для загрузки фикстур
+- fixtures/ — initial_data.json (demo-данные)
 
-## 🧩 Вспомогательные скрипты
+## 6. Документы и подробные руководства
+- API тестирование: API_TESTING_GUIDE.md
+- Celery: CELERY_GUIDE.md
+- Платежи: PAYMENTS_SUMMARY.md, Payments/QUICK_START.md, Payments/YOOKASSA_SETUP.md, Payments/STRIPE_SETUP.md, Payments/PAYMENT_SYSTEMS.md
+- Развёртывание и CI/CD: DEPLOYMENT.md
 
-В проекте есть несколько вспомогательных скриптов, которые упрощают разработку и тестирование:
+---
 
-*   `utils/clear_and_load_fixtures.py`:
-    Очищает базу данных и загружает все тестовые фикстуры (пользователей, курсы, уроки и т.д.). Удобен для быстрого сброса состояния БД.
+## 7. Коротко про папку utils и utils/scripts_for_demo
+- utils/ — вспомогательные модули, включая:
+  - celery_tasks.py — реализация фоновых задач и обёрток TaskWrapper (поддержка запуска и в среде без Celery для тестов);
+  - clear_and_load_fixtures.py — безопасный CLI для очистки БД и загрузки fixtures/initial_data.json; поддерживает dry-run, проверку, резервные обходы для auth.Permission;
+  - diag_load_fixtures.py — инструмент для поэлементной диагностики fixtures (проверяет, какие записи могут вызвать ошибки при loaddata);
+  - image_validators.py — валидатор изображений (Pillow) — проверяет формат и размер;
+  - profanity_filter.py и mixins.py — базовая проверка запрещённых слов в сериализаторах;
+  - services.py, paginators.py, common_mixins.py — общие сервисы, пагинаторы и миксины для ViewSet'ов.
 
-*   `utils/scripts_for_demo/setup_users.py`:
-    Создает набор тестовых пользователей с разными ролями (админ, учитель, студент, модератор) и стандартным паролем. Полезен, если вам нужны только пользователи без полной загрузки данных.
+- utils/scripts_for_demo — автономные скрипты для локальной разработки (запускаются как python file.py и настраивают окружение через django.setup()):
+  - setup_users.py — создаёт набор тестовых пользователей и групп (используйте для локальной разработки/demo);
+  - setup_prices.py — выставляет примерные цены или делает контент бесплатным;
+  - stripe_demo.py / yookassa_demo.py — простые скрипты для проверки подключения к платёжным сервисам и создания тестовых платежей.
 
-*   `utils/scripts_for_demo/setup_test_prices.py`:
-    Настраивает тестовые цены для всех дисциплин и уроков. Можно использовать для установки стандартных цен, сделать весь контент бесплатным или добавить скидки.
+---
 
-    **Использование:**
-    ```bash
-    python utils/scripts_for_demo/setup_test_prices.py setup    # Установить стандартные цены
-    python utils/scripts_for_demo/setup_test_prices.py free     # Сделать весь контент бесплатным
-    python utils/scripts_for_demo/setup_test_prices.py discount # Добавить примеры скидок
-    ```
+## 8. Дальше — куда идти (рекомендуемая последовательность чтения)
+README должен быть "входной картой". Ниже — простая логика переходов в зависимости от вашей цели. В README полезно оставить ссылку на следующий документ по логике: короткое описание + ссылка.
 
-*   `utils/scripts_for_demo/test_yookassa.py`:
-    Скрипт для тестирования интеграции с ЮKassa. Позволяет проверить подключение, создать тестовый платеж и узнать его статус.
+- Развернуть проект и начать разработку (Docker): сначала следуйте разделу 1 этого README, затем:
+  - Если планируете работать с фоновой обработкой задач: далее — CELERY_GUIDE.md (запуск Celery, Flower, конфигурация)
+  - Если нужно проверить платежи/симуляцию транзакций: далее — Payments/QUICK_START.md
+  - Если нужно тестировать API вручную: далее — API_TESTING_GUIDE.md
+  - Если нужен прод/CI/CD — откройте DEPLOYMENT.md
 
-*   `utils/admin_key_generator.py`:
-    Скрипт для генерации и отправки административных ключей пользователям с ролями `admin` или `moderator`. Эти ключи требуются для первого входа пользователей с такими ролями.
+- Локальная разработка без Docker: после раздела 2 README — посмотрите:
+  - CELERY_GUIDE.md — если используются фоновые задачи
+  - Payments/QUICK_START.md — настройка тестовых платёжных сценариев
 
-## 📝 Дополнительная документация
+- Полезные детали и отладка:
+  - Для загрузки/очистки demo-данных: utils/clear_and_load_fixtures.py (см. раздел 4)
+  - Для быстрого создания пользователей/цен: utils/scripts_for_demo/*
+## 9. Коротко про CI/CD и проверки
+- GitHub Actions (.github/workflows/ci-cd.yml) запускается на пуши в ветки main/master/develop и в feature/*, bugfix/*, hotfix/*; а также на PR в develop и main/master.
+- Джобы:
+  - Lint & Test: black/isort/flake8 + pytest с тестовыми настройками (DJANGO_SETTINGS_MODULE=config.test_settings). Если тесты/линтеры падают — деплой не запустится.
+  - Build Docker images: пробная сборка образов web и nginx.
+  - Deploy: выполняется только при пуше в main. Заходит на сервер по SSH и запускает docker compose с прод-овэррайдом.
+- Секреты, необходимые для деплоя: SSH_HOST, SSH_USER, SSH_KEY, DEPLOY_PATH. Опционально: SSH_PORT (если не 22). Подробности — [.github/README_CICD_SECRETS.md](.github/README_CICD_SECRETS.md) и [DEPLOYMENT.md](DEPLOYMENT.md).
 
-*   [API_TESTING_GUIDE.md](API_TESTING_GUIDE.md) - Руководство по тестированию API.
-*   [CELERY_GUIDE.md](CELERY_GUIDE.md) - Подробное руководство по использованию и настройке Celery.
-*   [PAYMENTS_SUMMARY.md](PAYMENTS_SUMMARY.md) - Сводка по системе платежей.
-*   [PAYMENT_SYSTEMS.md](Payments/PAYMENT_SYSTEMS.md) - Обзор доступных платежных систем (ЮKassa, Stripe).
-*   [QUICK_START.md](Payments/QUICK_START.md) - Быстрый старт с ЮKassa.
-*   [STRIPE_SETUP.md](Payments/STRIPE_SETUP.md) - Детальная настройка Stripe.
-*   [YOOKASSA_SETUP.md](Payments/YOOKASSA_SETUP.md) - Детальная настройка ЮKassa.
-*   [СТРУКТУРА_ДИСЦИПЛИН_И_УРОКОВ.md](СТРУКТУРА_ДИСЦИПЛИН_И_УРОКОВ.md) - Описание структуры дисциплин и уроков.
-*   [СХЕМА_СТРУКТУРЫ.md](СХЕМА_СТРУКТУРЫ.md) - Визуальная схема структуры дисциплин и уроков.
+Проверки локально (как повторить CI):
+- Линтеры:
+  - black --check .
+  - isort --check-only .
+  - flake8 .
+- Тесты (варианты):
+  - Без Docker (использует in‑memory SQLite):
+    - Linux/macOS: DJANGO_SETTINGS_MODULE=config.test_settings pytest -q -o addopts=''
+    - Windows PowerShell: $env:DJANGO_SETTINGS_MODULE="config.test_settings"; pytest -q -o addopts=''
+  - Через Docker (разовый контейнер):
+    docker compose run --rm -e DJANGO_SETTINGS_MODULE=config.test_settings web python -m pytest -q -o addopts=''
+  - Через Docker (поднять db/redis и гонять тесты в running web):
+    make test-docker  # или python dev.py test-docker
+- Покрытие (pytest-cov):
+  - Локально: DJANGO_SETTINGS_MODULE=config.test_settings pytest --cov=. --cov-report=term-missing -q -o addopts=''
+  - В Docker (разовый): docker compose run --rm -e DJANGO_SETTINGS_MODULE=config.test_settings web python -m pytest --cov=. --cov-report=term-missing -q -o addopts=''
 
-## 👥 Пользователи для тестирования (после загрузки фикстур)
+Swagger и документация API
+- Swagger UI доступен по адресу:
+  - Локально: http://localhost:8000/api/schema/swagger-ui/
+  - На сервере: http://<SERVER_IP>/api/schema/swagger-ui/
+- Redoc: http://<host>/api/schema/redoc/
 
-Все пользователи имеют пароль: `Spirocheta77`
+Фикстуры / начальные данные
+- Безопасный загрузчик: utils/clear_and_load_fixtures.py (подтверждение, проверки, обход проблем с auth.permission).
+- Быстрый старт (в Docker):
+  docker compose exec web python utils/clear_and_load_fixtures.py --yes
+- В проде используйте аккуратно. Скрипт умеет блокироваться при DEBUG=False (см. флаги в скрипте).
 
-*   **admin@a.aa** (Администратор) - имеет полный доступ к системе.
-*   **teacher_1@a.aa** (Преподаватель) - может создавать и управлять своими курсами и уроками.
-*   **student_1@a.aa** (Студент) - может проходить курсы и тесты, доступные ему.
-*   **moderator_1@a.aa** (Модератор) - имеет права на управление контентом, но не является суперпользователем.
+Для преподавателя (проверка ДЗ)
+- Достаточно оформить PR из своей ветки в develop. В пайплайне выполняются линтеры/тесты/сборка — их статус виден в PR.
+- Деплой не обязателен. Если нужен демонстрационный деплой — мёрдж в main запустит джоб Deploy (при наличии секретов в репозитории).
 
-Удачной разработки! ✨
+---
 
+## 10. Пошаговая «1 → 2 → 3» последовательность (от клона до работы и тестирования)
+
+1) Клонирование и запуск (Quick Start — Docker)
+   - Склонируйте репозиторий и перейдите в папку проекта.
+   - Создайте .env из .env.example и заполните переменные. Для локали:
+     - BASE_URL=http://127.0.0.1:8000
+     - ALLOWED_HOSTS=127.0.0.1,localhost
+   - Запустите: docker-compose up -d --build
+   - Миграции и фикстуры: docker-compose exec web python manage.py migrate && docker-compose exec web python utils/clear_and_load_fixtures.py --yes
+
+2) Полезные сервисы и отладка
+   - Celery/Redis — см. CELERY_GUIDE.md
+   - Swagger UI — http://localhost:8000/api/schema/swagger-ui/
+
+3) Тесты/линтеры локально
+   - См. раздел выше «Коротко про CI/CD и проверки».
+
+← [Назад: «Документация проекта»](README.md) | **Далее:** [CELERY_GUIDE.md](CELERY_GUIDE.md) → | [Все руководства](README.md)
+
+   - Создайте .env из .env.example и заполните значения.
+   - Запустите: docker-compose up -d --build
+   - Запустите миграции и (опционально) загрузите фикстуры: docker-compose exec web python manage.py migrate && docker-compose exec web python utils/clear_and_load_fixtures.py --yes
+
+2) Настройка дополнительной инфраструктуры и сервисов
+   - Redis/Celery (см. CELERY_GUIDE.md). Для локали можно запустить контейнер redis.
+   - Настройка платёжных провайдеров: заполните ключи в .env и следуйте Payments/QUICK_START.md (YooKassa/Stripe).
+   - Настройте webhook (ngrok / Cloudflare Tunnel) для локальной отладки платежей.
+
+3) Тестирование и отладка
+   - API: используйте API_TESTING_GUIDE.md для примеров curl и получения JWT токенов.
+   - Скрипты для разработки: utils/scripts_for_demo/* (создать пользователей/цен/демо‑платежи).
+   - Тесты: запустите pytest (локально или в контейнере через Makefile/dev.py). См. pytest.ini и config/test_settings.py.
+
+Эта последовательность — минимальный путь от A до Z: клонирование → окружение и сервисы → тестирование и отладка.
+Если нужно, могу превратить её в отдельный GETTING_STARTED.md с чек‑листом и командой копирования/вставки(Сообщите в ЛК.)
+
+---
+
+## Краткий чек‑лист (Copy & Paste для быстрого запуска)
+
+# Docker (рекомендуется)
+cp .env.example .env && docker-compose up -d --build && docker-compose exec web python manage.py migrate && docker-compose exec web python utils/clear_and_load_fixtures.py --yes
+
+# Локально (без Docker)
+python -m venv .venv && .venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+cp .env.example .env
+python manage.py migrate
+python utils/clear_and_load_fixtures.py --yes
+
+---
+
+← [Назад: «Документация проекта»](README.md) | **Далее:** [CELERY_GUIDE.md](CELERY_GUIDE.md) → | [Все руководства](README.md)

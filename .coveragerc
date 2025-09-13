@@ -1,0 +1,40 @@
+[run]
+branch = True
+source =
+    .
+omit =
+    */migrations/*
+    */tests/*
+    */__pycache__/*
+    .venv/*
+    env/*
+    venv/*
+    dump.rdb
+    */fixtures/*
+    */staticfiles/*
+    */templates/*
+    */scripts_for_demo/*
+    */utils/scripts_for_demo/*
+    */management/commands/*
+    **/*.pyc
+
+[report]
+show_missing = True
+skip_empty = True
+exclude_lines =
+    pragma: no cover
+    # Testing / debugging
+    if __name__ == "__main__"
+    if __name__ == '__main__'
+    raise AssertionError
+    raise NotImplementedError
+
+[html]
+directory = coverage_html
+
+[xml]
+output = coverage.xml
+
+[paths]
+source =
+    .
